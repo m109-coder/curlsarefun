@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { X } from 'lucide-react';
 
 const SESSION_KEY = 'hasSeenPromo';
@@ -72,9 +73,16 @@ export function PromoModal() {
         </button>
 
         {promo.targetUrl ? (
-          <a href={promo.targetUrl} onClick={close}>
-            <img src={promo.imageUrl} alt="Promotion" className="w-full h-auto object-cover" />
-          </a>
+          // Internal route (e.g. /cart, /booking) — closes the modal and
+          // navigates client-side. cursor-pointer makes the CTA affordance
+          // explicit on both desktop and touch devices.
+          <Link href={promo.targetUrl} onClick={close} className="block cursor-pointer">
+            <img
+              src={promo.imageUrl}
+              alt="Promotion"
+              className="w-full h-auto object-cover cursor-pointer"
+            />
+          </Link>
         ) : (
           <img src={promo.imageUrl} alt="Promotion" className="w-full h-auto object-cover" />
         )}

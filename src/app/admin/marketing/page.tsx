@@ -162,13 +162,14 @@ export default function AdminMarketingPage() {
             <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               id="targetUrl"
-              type="url"
+              type="text"
               value={promo.targetUrl ?? ''}
               onChange={(e) => setPromo((p) => ({ ...p, targetUrl: e.target.value || null }))}
-              placeholder="https://curlsarefun.com/products"
+              placeholder="/products  or  https://curlsarefun.com/sale"
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent min-h-[48px]"
             />
           </div>
+          <p className="text-xs text-gray-400 mt-1">Accepts internal routes like <code>/cart</code>, <code>/products</code>, <code>/booking</code> or full URLs.</p>
         </div>
 
         {message && (
