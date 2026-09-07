@@ -82,3 +82,16 @@ model Service {
   @@index([locationId])
   @@index([executionOrder])
 }
+
+/// Admin-managed promotional popup shown on the storefront homepage.
+/// A single row acts as the active configuration — the API always reads the
+/// most recently updated row. Only one popup should be `isActive` at a time;
+/// the admin UI enforces this by updating the single stored row.
+model PromoPopup {
+  id        String   @id @default(cuid())
+  isActive  Boolean  @default(false)
+  imageUrl  String
+  targetUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

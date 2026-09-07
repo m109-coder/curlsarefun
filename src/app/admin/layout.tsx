@@ -4,15 +4,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Calendar, 
+import {
+  LayoutDashboard,
+  Calendar,
   CalendarDays,
-  ShoppingBag, 
-  LogOut, 
-  Menu, 
+  ShoppingBag,
+  LogOut,
+  Menu,
   X,
-  Users
+  Users,
+  Megaphone
 } from 'lucide-react';
 import AuthProtection from '@/components/admin/AuthProtection';
 
@@ -31,6 +32,7 @@ export default function AdminLayout({
     { name: 'Calendar', href: '/admin/calendar', icon: CalendarDays },
     { name: 'Bookings', href: '/admin/bookings', icon: Calendar },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingBag },
+    { name: 'Marketing', href: '/admin/marketing', icon: Megaphone },
   ];
 
   const handleSignOut = async () => {
