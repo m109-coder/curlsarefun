@@ -19,6 +19,23 @@ function timeToMinutes(time: string): number {
 
 const BUFFER_MINUTES = 15;
 
+/**
+ * POST /api/appointments
+ *
+ * Creates a `PENDING_PAYMENT` appointment (a temporary hold). The slot is
+ * only released if the payment fails or the hold expires.
+ *
+ * Booking model:
+ *  - `serviceIds` accepts one or many services; their durations are **summed**
+ *    and multiplied by `guestCount` to get `totalDuration`.
+ *  - The 15-minute cleaning buffer is applied **once** at the end of the whole
+ *    block (`appointmentEnd + BUFFER`), so a multi-service booking only needs
+ *    a single buffer instead of one per service.
+ *  - Overlap is checked in salon-local time against existing `CONFIRMED` and
+ *    non-expired `PENDING_PAYMENT` appointments. A hold older than
+ *    `HOLD_TTL_MINUTES` no longer blocks the calendar (it is purged by
+ *    `/api/availability` lazily).
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

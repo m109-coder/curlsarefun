@@ -8,6 +8,25 @@ import Stripe from 'stripe';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * POST /api/webhooks/stripe
+ *
+ * Stripe event receiver. The raw request body is verified with
+ * `stripe.webhooks.constructEvent` against `STRIPE_WEBHOOK_SECRET` — without a
+ * valid signature the request is rejected with `400`.
+ *
+ * Handled events:
+ *  - `payment_intent.succeeded` → confirms the appointment in Prisma and
+ *    creates the Shopify order (with draft-order fallback).
+ *  - `payment_intent.payment_failed` → cancels the `PENDING_PAYMENT` hold so the
+ *    time slot is released for other customers.
+ *  - `charge.refunded` → marks the appointment `CANCELLED`.
+ *
+ * The handler always returns `200` after logging errors. This is deliberate:
+ * Stripe retries non-2xx responses, and once the payment has already been
+ * captured we prefer to log the Shopify failure for manual follow-up rather
+ * than trigger endless retries that could duplicate orders.
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text();
@@ -70,6 +89,27 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/**
+ * Confirms the appointment and creates the Shopify order after a successful
+ * charge.
+ *
+ * Flow:
+ *  1. Marks the appointment `CONFIRMED`, stores `amountPaid`, `balanceDue` and
+ *     the Stripe payment intent id.
+ *  2. Builds the order line items:
+ *     - Product lines use **only** `{ variant_id, quantity }` — Shopify must
+ *       resolve catalog pricing itself (prices must never be sent).
+ *     - Service lines use `{ title, price, quantity }` *without* `variant_id`,
+ *       plus `properties` carrying appointment metadata.
+ *  3. Tries `POST /orders.json` with `financial_status` `paid` or
+ *     `partially_paid` (partially paid orders via REST may require a
+ *     `transactions` array; if Shopify rejects the payload the call logs the
+ *     exact request/response body and falls back to a **Draft Order** so the
+ *     sale is never silently lost).
+ *
+ * The payment was already captured, so Shopify errors are logged loudly but
+ * never re-thrown to Stripe (see the POST docstring for the retry rationale).
+ */
 async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment succeeded:', paymentIntent.id);
 

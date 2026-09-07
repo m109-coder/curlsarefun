@@ -2,7 +2,15 @@ import { DateTime } from 'luxon';
 import { getLocationById, getLocationTimezone } from '@/config/locations';
 
 /**
- * Convierte una fecha/hora del usuario a la zona horaria del salón
+ * Converts a JS `Date` (any timezone) into a Luxon `DateTime` expressed in the
+ * salon's local timezone. Every availability/shift computation must happen in
+ * salon-local time, because staff schedules are defined by clock time, not by
+ * the visitor's device timezone.
+ *
+ * @param userDate - Date object coming from the client (usually produced by
+ *   `date.toISOString()` on the browser).
+ * @param locationId - Salon location id used to look up `timezone`.
+ * @returns Luxon `DateTime` in the salon timezone.
  */
 export function convertToSalonTime(
   userDate: Date,
@@ -73,8 +81,17 @@ interface TimeShift {
 }
 
 /**
- * Determina si una fecha específica es un día operativo para Boston.
- * Boston abre únicamente el primer y último domingo y lunes de cada mes.
+ * Returns `true` when the given date falls inside one of Boston's operating
+ * windows: the first **or** last Monday/Sunday of each month.
+ *
+ * @remarks
+ * The admin decided that Boston only opens on "first/last Mon or Sun" — a
+ * business rule that cannot be expressed with a simple weekday map. Keep this
+ * helper explicit so a future developer doesn't have to reverse-engineer the
+ * day-of-month arithmetic.
+ *
+ * @param date - Luxon `DateTime` already converted to the salon timezone.
+ * @returns `true` if the location should accept appointments on that day.
  */
 function isBostonOpenDate(date: DateTime): boolean {
   // Luxon: weekday 1 = Monday, 7 = Sunday
@@ -93,8 +110,20 @@ function isBostonOpenDate(date: DateTime): boolean {
 }
 
 /**
- * Devuelve los turnos operativos para una locación en una fecha específica.
- * Usa lógica explícita por locación, sin depender de mapeos de strings de días.
+ * Resolves the opening shifts of a location for a specific calendar day.
+ *
+ * @remarks
+ * - Returns an array of `{ open, close }` windows in `"HH:mm"` salon-local time.
+ * - An empty array means the salon is closed that day — callers should treat
+ *   this as "no availability", not as an error.
+ * - The weekday map is intentionally written as explicit `switch`/`if` blocks
+ *   per location instead of deriving it from `businessHours` in the config.
+ *   Boston's rule ("first/last Mon or Sun") is dynamic and cannot be stored in
+ *   a static `businessHours` table, so the config field is only informational.
+ *
+ * @param locationId - `new-york` | `boston` | `los-angeles` (see `src/config/locations.ts`).
+ * @param date - Luxon `DateTime` already zoned to the salon timezone.
+ * @returns Array of open/close windows for that day.
  */
 export function getLocationShiftsForDate(
   locationId: string,
@@ -148,7 +177,12 @@ export function getLocationShiftsForDate(
 }
 
 /**
- * Verifica si una locación está abierta en una fecha específica.
+ * Fast check used by the `<BookingCalendar>` day grid to disable days where the
+ * salon has no operating shifts.
+ *
+ * @param locationId - Salon location id.
+ * @param date - Luxon `DateTime` (callers already pass a salon-zoned value).
+ * @returns `true` when at least one shift exists for that day.
  */
 export function isLocationOpenOnDate(
   locationId: string,
@@ -158,9 +192,24 @@ export function isLocationOpenOnDate(
 }
 
 /**
- * Genera slots de tiempo disponibles para un día y locación específicos.
- * Respete los turnos del día, el buffer de limpieza de 15 minutos,
- * y la duración total del servicio.
+ * Generates every candidate start time ("HH:mm", salon-local) that can hold an
+ * appointment of `serviceDuration` minutes inside the day's shifts.
+ *
+ * @remarks
+ * **Buffer policy:** the 15-minute cleaning buffer is *not* part of this
+ * function. We intentionally allow a service to end exactly at `shift.close`
+ * (e.g. a 3h service in a 12:00–15:00 shift) — the buffer is only required
+ * *between* appointments and is applied by the overlap check in
+ * `src/app/api/availability/route.ts` (`slotEnd = start + duration + 15`).
+ * Including the buffer here was the cause of the "multi-service shows no
+ * slots" bug, because it artificially inflated the required window.
+ *
+ * @param date - The requested day (any timezone; converted internally).
+ * @param locationId - Salon location id.
+ * @param serviceDuration - Combined duration of all selected services in
+ *   minutes (`service1.duration + service2.duration + ...`, already multiplied
+ *   by guest count when applicable).
+ * @returns Sorted array of candidate start times, e.g. `["10:00","10:15"]`.
  */
 export function generateTimeSlots(
   date: Date,
@@ -196,8 +245,10 @@ export function generateTimeSlots(
 }
 
 /**
- * Verifica si un slot está disponible considerando citas existentes.
- * Por ahora permite todos los slots generados; aquí se conectaría con Prisma.
+ * @deprecated Conflict checking now happens inside
+ * `src/app/api/availability/route.ts`, which has access to the database.
+ * This helper remains as a placeholder for a future per-slot check that would
+ * also need the current booking id to allow rescheduling.
  */
 export async function isSlotAvailable(
   date: Date,
@@ -211,7 +262,21 @@ export async function isSlotAvailable(
 }
 
 /**
- * Calcula la hora de fin basada en la duración del servicio
+ * Computes the appointment end time ("HH:mm") given a start time and the total
+ * combined service duration.
+ *
+ * @remarks
+ * This value represents the moment the **services** finish. The 15-minute
+ * cleaning buffer is *not* included here: it is only used when evaluating
+ * conflicts between appointments. The `Appointment.endTime` stored in the DB
+ * equals this value, so downstream code must remember to add `BUFFER_MINUTES`
+ * when comparing against other bookings.
+ *
+ * @param startTime - `"HH:mm"` salon-local start time.
+ * @param serviceDuration - Combined duration of all selected services, minutes.
+ * @param locationId - Unused today; kept in the signature so future
+ *   per-location rounding rules can be introduced without breaking callers.
+ * @returns `"HH:mm"` end time (may exceed 24:00 only in invalid input).
  */
 export function calculateEndTime(
   startTime: string,

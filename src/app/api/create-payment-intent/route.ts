@@ -3,6 +3,24 @@ import stripe from '@/lib/stripe/client';
 import { formatAmountForStripe, createStripeMetadata } from '@/lib/stripe/client';
 import { prisma } from '@/lib/db/prisma';
 
+/**
+ * POST /api/create-payment-intent
+ *
+ * Creates a Stripe PaymentIntent for one of three payment types:
+ *  - `booking`  — only the booking deposit or the full service amount.
+ *  - `product`  — only physical Shopify products.
+ *  - `combined` — products + booking amount in a single charge.
+ *
+ * Security notes:
+ *  - For booking/combined the server recomputes the price from the DB; the
+ *    `amount` sent by the client is only trusted for `product`-only payments.
+ *  - `metadata.items` is deliberately compacted (`createStripeMetadata`) to
+ *    stay under Stripe's 500-char-per-value limit.
+ *  - `setup_future_usage: 'off_session'` is only sent when a Stripe customer
+ *    exists — sending it without a customer was previously rejected by Stripe.
+ *
+ * @returns `{ clientSecret, paymentIntentId }` used by `<StripeCheckout>`.
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

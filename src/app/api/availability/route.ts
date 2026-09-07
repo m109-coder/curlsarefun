@@ -25,6 +25,26 @@ function normalizeDate(date: Date): Date {
   return d;
 }
 
+/**
+ * GET /api/availability?locationId=...&date=ISO&serviceDuration=minutes
+ *
+ * Returns the list of bookable start times for a salon day.
+ *
+ * Availability model:
+ *  1. `generateTimeSlots` produces candidate start times where the *service*
+ *     fits inside an open shift (buffer NOT included in the shift fit check).
+ *  2. Existing `CONFIRMED` and non-expired `PENDING_PAYMENT` appointments are
+ *     turned into busy intervals `[startTime, endTime + 15min)`.
+ *  3. A slot is free only if `[slotStart, slotStart + serviceDuration + 15min)`
+ *     does not intersect any busy interval — i.e. the 15-minute cleaning buffer
+ *     is applied exactly once, at the end of the appointment block.
+ *
+ * Why expired holds are purged first: `PENDING_PAYMENT` appointments hold a
+ * slot for a short window; leaving stale holds would permanently shrink the
+ * calendar after abandoned checkouts.
+ *
+ * @returns `{ slots: string[] }` — `"HH:mm"` values in salon-local time.
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
