@@ -47,8 +47,23 @@ export async function POST(request: NextRequest) {
     let metadataType = type;
     let customerId: string | undefined;
 
+    // Products are always paid in full. Bookings may be deposit or full.
+    // The server recomputes the price; the client `amount` is only used as a
+    // sanity check (it must match the recomputed total).
     let bookingAmount = 0;
-    let productTotal = finalAmount;
+    let productTotal = 0;
+
+    // Product items have a variantId and are not the appointment placeholder.
+    const productItems = (items || []).filter(
+      (item: any) =>
+        !item.appointmentId &&
+        (item.variantId || item.variant_id) &&
+        Number(item.quantity || 0) > 0
+    );
+    const computedProductTotal = productItems.reduce(
+      (sum: number, item: any) => sum + Number(item.price || 0) * Number(item.quantity || 1),
+      0
+    );
 
     // For booking or combined payments, verify appointment exists
     if ((type === 'booking' || type === 'combined') && appointmentId) {
@@ -101,49 +116,52 @@ export async function POST(request: NextRequest) {
       }
 
       // Determine booking amount based on payment option
-      bookingAmount = depositAmount;
-      if (paymentOption === 'full') {
-        bookingAmount = totalAmount;
-      }
+      bookingAmount = paymentOption === 'full' ? totalAmount : depositAmount;
 
-      // For booking-only, use the selected booking amount
+      // For booking-only, the charge is exactly the booking amount
       if (type === 'booking') {
-        finalAmount = bookingAmount;
         productTotal = 0;
+        finalAmount = bookingAmount;
         description = paymentOption === 'full'
           ? `Full payment for ${serviceName} (${guests} guest${guests > 1 ? 's' : ''})`
           : `Booking deposit for ${serviceName} (${guests} guest${guests > 1 ? 's' : ''})`;
       }
 
-      // For combined, trust the passed amount (it should include cart + booking)
-      // but ensure it's at least the booking amount
+      // For combined, the charge is product total (always full) + booking amount
       if (type === 'combined') {
-        productTotal = Number(amount) - bookingAmount;
+        productTotal = computedProductTotal;
+        finalAmount = productTotal + bookingAmount;
 
-        if (productTotal < 0) {
+        if (productTotal < 0 || finalAmount <= 0) {
           return NextResponse.json(
             { error: 'Invalid payment amount' },
             { status: 400 }
           );
         }
 
-        finalAmount = productTotal + bookingAmount;
         description = paymentOption === 'full'
           ? `Product purchase + full payment for ${serviceName} (${guests} guest${guests > 1 ? 's' : ''})`
           : `Product purchase + booking deposit for ${serviceName} (${guests} guest${guests > 1 ? 's' : ''})`;
       }
 
-      // Update appointment payment option and balance due for the user-facing state
+      // Save only the payment option; balance/due are updated on success
       await prisma.appointment.update({
         where: { id: appointmentId },
-        data: {
-          paymentOption,
-          balanceDue: paymentOption === 'full' ? 0 : totalAmount - bookingAmount,
-        },
+        data: { paymentOption },
       });
     } else if (type === 'product') {
       bookingAmount = 0;
-      productTotal = finalAmount;
+      productTotal = computedProductTotal;
+      finalAmount = productTotal;
+    }
+
+    // Sanity check: the client amount must match the server-computed total
+    if (Math.abs(finalAmount - Number(amount)) > 0.01) {
+      console.warn(`Payment amount mismatch: client=${amount}, server=${finalAmount}`);
+      return NextResponse.json(
+        { error: 'Payment amount mismatch. Please refresh and try again.' },
+        { status: 400 }
+      );
     }
 
     if (finalAmount <= 0) {

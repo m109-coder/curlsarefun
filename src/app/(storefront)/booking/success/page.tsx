@@ -120,6 +120,21 @@ function BookingSuccessPageContent() {
   const amountPaidFromQuery = amountPaidParam ? Number(amountPaidParam) : 0;
   const productTotalFromQuery = productTotalParam ? Number(productTotalParam) : 0;
 
+  // Confirm the payment server-side right after checkout. This runs the same
+  // fulfillment as the Stripe webhook (confirm appointment + create Shopify
+  // order) so orders are created immediately even if the webhook is not yet
+  // configured. The operation is idempotent.
+  useEffect(() => {
+    if (!paymentId) return;
+    fetch('/api/payment/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentIntentId: paymentId }),
+    }).catch((err) => {
+      console.error('Payment confirmation request failed:', err);
+    });
+  }, [paymentId]);
+
   useEffect(() => {
     if (!bookingId) {
       setLoading(false);

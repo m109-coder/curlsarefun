@@ -179,8 +179,9 @@ export function StripeCheckout({
             type: paymentType,
             paymentOption: paymentOption || 'deposit',
             amount,
-            items: items.map(item => ({ ...item, appointmentId })),
+            items,
             clientInfo,
+            appointmentId,
           }),
         });
 
