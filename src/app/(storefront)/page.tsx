@@ -11,19 +11,20 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section — full-screen image + dark overlay + wave into tertiary */}
+      {/* Hero Section — full-screen image + warm dark overlay + wave into tertiary */}
       <section className="relative min-h-[100svh] flex items-center justify-center">
         <Image
-          src="/images/antonio-berducci.jpg"
-          alt="Antonio Berducci - Your Curly Hair Guru"
+          src="https://images.unsplash.com/photo-1747710016904-2b93d97ffb72?auto=format&fit=crop&w=1920&q=80"
+          alt="Woman with beautiful voluminous curly hair"
           fill
-          className="object-cover"
+          className="object-cover object-center animate-fade-in"
           priority
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-neutral-dark/60" aria-hidden="true" />
+        {/* Warm gradient overlay: keeps the headline 100% legible without hiding the photo */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-[#3C2F2F]/60" aria-hidden="true" />
 
-        <div className="relative z-10 text-center px-4 sm:px-6 max-w-3xl mx-auto space-y-8 py-24">
+        <div className="relative z-10 text-center px-4 sm:px-6 max-w-3xl mx-auto space-y-8 py-24 animate-fade-in">
           <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl text-white leading-tight">
             Your Curly Hair
             <span className="block text-tertiary">Guru</span>
