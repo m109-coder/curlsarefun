@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  password      String
+  image         String?
+  role          String    @default("admin")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Appointment {
+  id           String   @id @default(cuid())
+  locationId   String
+  services     Service[]
+  clientId     String
+  client       Client   @relation(fields: [clientId], references: [id])
+  date         DateTime
+  startTime    String
+  endTime      String
+  timezone     String
+  status       String   @default("PENDING_PAYMENT")
+  depositPaid  Boolean  @default(false)
+  totalAmount  Decimal  @db.Decimal(10, 2)
+  amountPaid   Decimal  @db.Decimal(10, 2) @default(0)
+  balanceDue   Decimal  @db.Decimal(10, 2) @default(0)
+  paymentOption String? // 'deposit' or 'full'
+  guestCount   Int      @default(1)
+  notes        String?
+  paymentIntentId String?
+  stripePaymentIntentId String?
+  stripePaymentMethodId String?
+  shopifyOrderId String?
+  expiresAt    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([locationId, date, startTime])
+  @@index([clientId])
+  @@index([paymentIntentId])
+  @@index([stripePaymentIntentId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String
+  stripeCustomerId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments Appointment[]
+}
+
+model Service {
+  id            String   @id @default(cuid())
+  locationId    String
+  name          String
+  description   String
+  duration      Int
+  price         Decimal  @db.Decimal(10, 2)
+  depositAmount Decimal  @db.Decimal(10, 2)
+  category      String
+  executionOrder Int    @default(99)
+  appointments  Appointment[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([locationId])
+  @@index([executionOrder])
+}

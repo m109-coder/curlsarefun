@@ -1,0 +1,50 @@
+import { NextRequest, NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
+import { getShopifyOrders, getShopifyOrderById } from '@/lib/shopify/admin-client';
+
+export const dynamic = 'force-dynamic';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
+
+export async function GET(request: NextRequest) {
+  try {
+    const token = request.cookies.get('admin-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
+      jwt.verify(token, JWT_SECRET);
+    } catch {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (id) {
+      const order = await getShopifyOrderById(id);
+      if (!order) {
+        return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      }
+      return NextResponse.json({ order });
+    }
+
+    const orders = await getShopifyOrders(50);
+    return NextResponse.json({ orders });
+  } catch (error) {
+    console.error('Failed to fetch orders:', error);
+    const message = error instanceof Error ? error.message : 'Failed to fetch orders';
+    if (message.includes('customer') || message.includes('Customer') || message.includes('permission') || message.includes('Permission') || message.includes('access denied')) {
+      return NextResponse.json(
+        { error: 'Permisos de cliente requeridos en Shopify', code: 'PII_REQUIRED', details: message },
+        { status: 403 }
+      );
+    }
+    return NextResponse.json(
+      { error: 'Failed to fetch orders', details: message },
+      { status: 500 }
+    );
+  }
+}
