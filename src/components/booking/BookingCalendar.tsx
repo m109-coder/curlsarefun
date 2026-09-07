@@ -181,12 +181,12 @@ export function BookingCalendar({
               className={`
                 flex items-center justify-center min-h-[48px] rounded-xl text-sm font-semibold transition-all duration-200
                 ${isSelected 
-                  ? 'bg-green-600 text-white shadow-md' 
+                  ? 'bg-primary text-white shadow-md' 
                   : isSelectable 
                   ? 'hover:bg-gray-100 text-gray-900 active:scale-95' 
                   : 'text-gray-300 cursor-not-allowed'
                 }
-                ${isToday && !isSelected ? 'border-2 border-green-600' : ''}
+                ${isToday && !isSelected ? 'border-2 border-primary' : ''}
               `}
             >
               {date.day}
@@ -204,7 +204,7 @@ export function BookingCalendar({
           
           {loadingSlots ? (
             <div className="flex items-center justify-center space-x-2 py-6 text-gray-500">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600"></div>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
               <span>Loading available times...</span>
             </div>
           ) : availableSlots.length === 0 ? (
@@ -220,7 +220,7 @@ export function BookingCalendar({
                   className={`
                     py-3.5 px-2 rounded-xl text-sm font-semibold transition-all duration-200 min-h-[52px]
                     ${selectedTime === time
-                      ? 'bg-green-600 text-white shadow-md'
+                      ? 'bg-primary text-white shadow-md'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-900 active:scale-95'
                     }
                   `}

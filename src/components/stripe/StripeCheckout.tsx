@@ -85,8 +85,8 @@ function CheckoutForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="flex items-center space-x-3 mb-2">
-        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-          <Lock className="w-5 h-5 text-green-600" />
+        <div className="w-10 h-10 bg-tertiary rounded-full flex items-center justify-center">
+          <Lock className="w-5 h-5 text-primary" />
         </div>
         <div>
           <h2 className="text-base font-bold text-gray-900">Secure Payment</h2>
@@ -136,7 +136,7 @@ function CheckoutForm({
         <button
           type="submit"
           disabled={!stripe || isProcessing}
-          className="flex-[2] px-4 py-3.5 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transition-all duration-200 min-h-[56px] shadow-sm"
+          className="flex-[2] px-4 py-3.5 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transition-all duration-200 min-h-[56px] shadow-sm"
         >
           {isProcessing ? (
             <>
@@ -210,7 +210,7 @@ export function StripeCheckout({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-10">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }

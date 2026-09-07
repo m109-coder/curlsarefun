@@ -39,12 +39,12 @@ function MapModal({
         {/* Address + phone */}
         <div className="px-4 sm:px-6 py-4 bg-gray-50 border-b border-gray-100">
           <div className="flex items-start space-x-3">
-            <MapPin className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
             <p className="text-gray-700 font-medium">{location.address}</p>
           </div>
           <div className="flex items-center space-x-3 mt-2">
-            <Phone className="w-5 h-5 text-green-600 flex-shrink-0" />
-            <a href={`tel:${location.phone.replace(/-/g, '')}`} className="text-green-700 font-medium hover:underline">
+            <Phone className="w-5 h-5 text-primary flex-shrink-0" />
+            <a href={`tel:${location.phone.replace(/-/g, '')}`} className="text-primary font-medium hover:underline">
               {location.phone}
             </a>
           </div>
@@ -68,7 +68,7 @@ function MapModal({
             href={directionsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center w-full px-6 py-3.5 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-all duration-200 min-h-[52px]"
+            className="inline-flex items-center justify-center w-full px-6 py-3.5 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark transition-all duration-200 min-h-[52px]"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
             Get Directions
@@ -89,13 +89,13 @@ export function LocationCards() {
           <button
             key={location.id}
             onClick={() => setSelectedLocation(location)}
-            className="group text-left bg-white border border-gray-200 rounded-2xl p-6 transition-all duration-200 hover:shadow-xl hover:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="group text-left bg-white border border-secondary/30 rounded-3xl p-6 transition-all duration-200 hover:shadow-xl hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <div className="flex items-start justify-between mb-3">
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
                 {location.name}
               </h3>
-              <MapPin className="w-6 h-6 text-green-600 opacity-60 group-hover:opacity-100 transition-opacity" />
+              <MapPin className="w-6 h-6 text-primary opacity-60 group-hover:opacity-100 transition-opacity" />
             </div>
             <p className="text-gray-600 mb-4 text-sm sm:text-base">{location.address}</p>
             <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
@@ -106,13 +106,13 @@ export function LocationCards() {
               <a
                 href={`tel:${location.phone.replace(/-/g, '')}`}
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center text-green-600 hover:underline font-medium"
+                className="inline-flex items-center text-primary hover:underline font-medium"
               >
                 <Phone className="w-3.5 h-3.5 mr-1" />
                 {location.phone}
               </a>
             </div>
-            <div className="mt-4 text-sm font-medium text-green-600 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="mt-4 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
               Tap to view map →
             </div>
           </button>

@@ -9,14 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Curls Are Fun design system — approved palette
         primary: {
-          DEFAULT: '#1a1a1a',
-          light: '#2d2d2d',
+          DEFAULT: '#D67D5C',
+          dark: '#B86A4C',
+          light: '#E59A7D',
         },
         secondary: {
-          DEFAULT: '#ffffff',
-          alt: '#f8f8f8',
+          DEFAULT: '#BC8A7B',
+          light: '#D2A795',
         },
+        tertiary: '#F9E4D4',
+        'neutral-dark': '#3C2F2F',
         accent: {
           green: '#4A7C59',
           purple: '#6B4C9A',
@@ -24,10 +28,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['Playfair Display', 'serif'],
-        body: ['Inter', 'sans-serif'],
-        accent: ['DM Sans', 'sans-serif'],
-        mono: ['Fira Code', 'monospace'],
+        display: ['var(--font-playfair)', 'Playfair Display', 'serif'],
+        body: ['var(--font-inter)', 'Inter', 'sans-serif'],
       },
       spacing: {
         '18': '4.5rem',

@@ -60,7 +60,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       <div className="mt-4">
-        <h3 className="font-medium text-gray-900 group-hover:text-green-700 transition-colors">
+        <h3 className="font-medium text-gray-900 group-hover:text-primary transition-colors">
           {product.title}
         </h3>
         

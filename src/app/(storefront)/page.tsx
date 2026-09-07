@@ -1,6 +1,7 @@
 import { getAllProducts } from '@/lib/shopify/queries/products';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { LocationCards } from '@/components/home/LocationCards';
+import { WaveDivider } from '@/components/ui/WaveDivider';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -10,76 +11,74 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center bg-gradient-to-br from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h1 className="text-5xl lg:text-7xl font-bold text-gray-900">
-                  Your Curly Hair
-                  <span className="block text-green-700">Guru</span>
-                </h1>
-                <p className="text-xl text-gray-600 max-w-lg">
-                  20 years of experience transforming curly hair with expertise, education, and premium products.
-                </p>
-              </div>
+      {/* Hero Section — full-screen image + dark overlay + wave into tertiary */}
+      <section className="relative min-h-[100svh] flex items-center justify-center">
+        <Image
+          src="/images/antonio-berducci.jpg"
+          alt="Antonio Berducci - Your Curly Hair Guru"
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-neutral-dark/60" aria-hidden="true" />
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link 
-                  href="/booking"
-                  className="px-8 py-4 bg-green-700 text-white rounded-lg font-semibold hover:bg-green-800 transition-colors text-center"
-                >
-                  Book Appointment
-                </Link>
-                <Link 
-                  href="/products"
-                  className="px-8 py-4 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors text-center"
-                >
-                  Shop Products
-                </Link>
-              </div>
+        <div className="relative z-10 text-center px-4 sm:px-6 max-w-3xl mx-auto space-y-8 py-24">
+          <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl text-white leading-tight">
+            Your Curly Hair
+            <span className="block text-tertiary">Guru</span>
+          </h1>
+          <p className="font-body text-lg sm:text-xl text-tertiary/90 max-w-xl mx-auto">
+            20 years of experience transforming curly hair with expertise, education, and premium products.
+          </p>
 
-              <div className="flex items-center space-x-6 pt-4">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">Vidal Sassoon Certified</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">4.9★ (500+ reviews)</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gray-200">
-                <Image
-                  src="/images/antonio-berducci.jpg"
-                  alt="Antonio Berducci - Your Curly Hair Guru"
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <Link
+              href="/booking"
+              className="px-10 py-4 bg-primary text-white rounded-full font-body font-semibold hover:bg-primary-dark transition-colors text-center shadow-lg"
+            >
+              Book Appointment
+            </Link>
+            <Link
+              href="/products"
+              className="px-10 py-4 bg-transparent border-2 border-tertiary text-tertiary rounded-full font-body font-semibold hover:bg-tertiary/10 transition-colors text-center"
+            >
+              Shop Products
+            </Link>
           </div>
+
+          <div className="flex items-center justify-center space-x-6 pt-2">
+            <span className="text-sm text-tertiary/80 font-body">Vidal Sassoon Certified</span>
+            <span className="text-sm text-tertiary/80 font-body">4.9★ (500+ reviews)</span>
+          </div>
+        </div>
+
+        {/* Curl wave into the locations section */}
+        <div className="absolute bottom-0 left-0 right-0 z-10">
+          <WaveDivider fill="#F9E4D4" />
         </div>
       </section>
 
       {/* Locations Section */}
-      <section className="py-20 bg-white">
+      <section className="bg-tertiary pb-24 pt-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Locations</h2>
+          <h2 className="font-display text-3xl sm:text-4xl text-center text-neutral-dark mb-12">
+            Our Locations
+          </h2>
           <LocationCards />
         </div>
+        <WaveDivider fill="#FFFFFF" className="mt-16" />
       </section>
 
       {/* Featured Products */}
-      <section className="py-20 bg-gray-50">
+      <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold">Featured Products</h2>
-            <Link href="/products" className="text-green-700 hover:underline">
+            <h2 className="font-display text-3xl sm:text-4xl text-neutral-dark">Featured Products</h2>
+            <Link
+              href="/products"
+              className="font-body font-semibold text-primary hover:text-primary-dark transition-colors"
+            >
               View All Products →
             </Link>
           </div>
@@ -89,6 +88,7 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
+        <WaveDivider fill="#3C2F2F" className="mt-20" />
       </section>
     </div>
   )

@@ -177,7 +177,7 @@ export default function BookingPage() {
               <select
                 value={guestCount}
                 onChange={(e) => setGuestCount(Number(e.target.value))}
-                className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent min-h-[52px] text-base"
+                className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent min-h-[52px] text-base"
               >
                 <option value={1}>Just me</option>
                 <option value={2}>2 people</option>
@@ -223,7 +223,7 @@ export default function BookingPage() {
                   type="text"
                   value={clientInfo.name}
                   onChange={(e) => setClientInfo({ ...clientInfo, name: e.target.value })}
-                  className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent min-h-[52px]"
+                  className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent min-h-[52px]"
                   required
                 />
               </div>
@@ -234,7 +234,7 @@ export default function BookingPage() {
                   type="email"
                   value={clientInfo.email}
                   onChange={(e) => setClientInfo({ ...clientInfo, email: e.target.value })}
-                  className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent min-h-[52px]"
+                  className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent min-h-[52px]"
                   required
                 />
               </div>
@@ -245,7 +245,7 @@ export default function BookingPage() {
                   type="tel"
                   value={clientInfo.phone}
                   onChange={(e) => setClientInfo({ ...clientInfo, phone: e.target.value })}
-                  className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent min-h-[52px]"
+                  className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent min-h-[52px]"
                   required
                 />
               </div>
@@ -255,7 +255,7 @@ export default function BookingPage() {
                 <textarea
                   value={clientInfo.notes}
                   onChange={(e) => setClientInfo({ ...clientInfo, notes: e.target.value })}
-                  className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
                   rows={3}
                 />
               </div>
@@ -304,7 +304,7 @@ export default function BookingPage() {
               <div className="border-t border-gray-200 pt-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Total</span>
-                  <span className="text-2xl font-bold text-green-700">${totalPrice.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-primary">${totalPrice.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-sm text-gray-500">Deposit required</span>
@@ -316,7 +316,7 @@ export default function BookingPage() {
             <button
               onClick={handleBookingConfirm}
               disabled={isSubmitting}
-              className="w-full py-4 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center space-x-2 min-h-[56px]"
+              className="w-full py-4 bg-primary text-white rounded-full font-body font-semibold hover:bg-primary-dark transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center space-x-2 min-h-[56px]"
             >
               {isSubmitting ? (
                 <>
@@ -332,8 +332,8 @@ export default function BookingPage() {
       case 'confirmation':
         return (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 bg-tertiary rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
@@ -371,7 +371,7 @@ export default function BookingPage() {
                   <div className={`
                     w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
                     ${index <= currentStepIndex
-                      ? 'bg-green-600 text-white'
+                      ? 'bg-primary text-white'
                       : 'bg-gray-200 text-gray-600'
                     }
                   `}>
@@ -386,7 +386,7 @@ export default function BookingPage() {
                   {index < 5 && (
                     <div className={`
                       w-12 h-0.5 mx-4
-                      ${index < currentStepIndex ? 'bg-green-600' : 'bg-gray-200'}
+                      ${index < currentStepIndex ? 'bg-primary' : 'bg-gray-200'}
                     `} />
                   )}
                 </div>
@@ -405,7 +405,7 @@ export default function BookingPage() {
               {currentStep !== 'location' && (
                 <button
                   onClick={handleBack}
-                  className="px-6 py-3 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200 min-h-[48px]"
+                  className="px-6 py-3 border border-primary text-primary rounded-full font-body font-medium hover:bg-tertiary/50 transition-all duration-200 min-h-[48px]"
                 >
                   Back
                 </button>
@@ -414,7 +414,7 @@ export default function BookingPage() {
                 <button
                   onClick={handleNext}
                   disabled={!canProceed()}
-                  className="ml-auto px-8 py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 min-h-[48px]"
+                  className="ml-auto px-8 py-3 bg-primary text-white rounded-full font-body font-semibold hover:bg-primary-dark disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 min-h-[48px]"
                 >
                   Next
                 </button>
@@ -431,7 +431,7 @@ export default function BookingPage() {
             {currentStep !== 'location' && (
               <button
                 onClick={handleBack}
-                className="flex-shrink-0 px-4 py-3.5 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200 min-h-[52px] min-w-[52px]"
+                className="flex-shrink-0 px-4 py-3.5 border border-primary text-primary rounded-full font-body font-medium hover:bg-tertiary/50 transition-all duration-200 min-h-[52px] min-w-[52px]"
               >
                 Back
               </button>
@@ -440,7 +440,7 @@ export default function BookingPage() {
               <button
                 onClick={handleNext}
                 disabled={!canProceed()}
-                className="flex-1 py-3.5 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 min-h-[52px]"
+                className="flex-1 py-3.5 bg-primary text-white rounded-full font-body font-semibold hover:bg-primary-dark disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 min-h-[52px]"
               >
                 Next
               </button>

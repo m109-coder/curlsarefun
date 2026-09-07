@@ -33,15 +33,15 @@ function BookingCard({ booking }: { booking: ActiveBooking }) {
   const { removeActiveBooking, setIsOpen } = useCart();
 
   return (
-    <div className="bg-green-50 border border-green-200 rounded-2xl p-4">
+    <div className="bg-tertiary/50 border border-primary/30 rounded-2xl p-4">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center space-x-2">
-          <Calendar className="w-5 h-5 text-green-700" />
+          <Calendar className="w-5 h-5 text-primary" />
           <span className="font-semibold text-green-900">Booking Deposit</span>
         </div>
         <button
           onClick={removeActiveBooking}
-          className="p-2 hover:bg-green-100 rounded-full text-green-700 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center"
+          className="p-2 hover:bg-tertiary rounded-full text-primary transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center"
           aria-label="Remove booking"
         >
           <X className="w-5 h-5" />
@@ -66,7 +66,7 @@ function BookingCard({ booking }: { booking: ActiveBooking }) {
 
       <div className="mt-3 flex items-center justify-between">
         <span className="font-semibold text-gray-900">${booking.depositAmount.toFixed(2)}</span>
-        <span className="text-xs text-green-800 bg-green-100 px-2 py-1 rounded-full flex items-center space-x-1">
+        <span className="text-xs text-green-800 bg-tertiary px-2 py-1 rounded-full flex items-center space-x-1">
           <Clock className="w-3 h-3" />
           <CountdownTimer expiresAt={booking.expiresAt} />
         </span>
@@ -75,7 +75,7 @@ function BookingCard({ booking }: { booking: ActiveBooking }) {
       <Link
         href={`/checkout?appointmentId=${booking.id}`}
         onClick={() => setIsOpen(false)}
-        className="mt-3 w-full py-3 bg-green-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center space-x-2 hover:bg-green-700 transition-colors min-h-[48px]"
+        className="mt-3 w-full py-3 bg-primary text-white rounded-xl text-sm font-semibold flex items-center justify-center space-x-2 hover:bg-primary-dark transition-colors min-h-[48px]"
       >
         <span>Proceed to Payment</span>
         <ChevronRight className="w-4 h-4" />
@@ -169,7 +169,7 @@ export function CartDrawer() {
                     <div className="flex-1 min-w-0">
                       <Link
                         href={`/products/${item.handle}`}
-                        className="font-medium text-gray-900 hover:text-green-700 truncate block text-sm sm:text-base"
+                        className="font-medium text-gray-900 hover:text-primary truncate block text-sm sm:text-base"
                       >
                         {item.title}
                       </Link>

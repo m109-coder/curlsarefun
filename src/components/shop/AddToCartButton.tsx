@@ -34,7 +34,7 @@ export function AddToCartButton({ product, variantId }: AddToCartButtonProps) {
     <button
       onClick={handleAddToCart}
       disabled={!variant.availableForSale}
-      className="w-full px-6 py-4 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+      className="w-full px-6 py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
     >
       <Plus className="w-5 h-5" />
       <span>{variant.availableForSale ? 'Add to Cart' : 'Out of Stock'}</span>

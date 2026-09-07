@@ -39,7 +39,7 @@ export function LocationSelector({
             className={`
               relative p-5 rounded-2xl border-2 transition-all duration-200 text-left min-h-[120px] flex flex-col justify-between
               ${selectedLocation === location.id
-                ? 'border-green-600 bg-green-50 shadow-lg'
+                ? 'border-primary bg-tertiary/50 shadow-lg'
                 : 'border-gray-200 hover:border-gray-300 bg-white'
               }
             `}
@@ -49,7 +49,7 @@ export function LocationSelector({
               <div className={`
                 w-16 h-16 rounded-full flex items-center justify-center mb-4
                 ${selectedLocation === location.id
-                  ? 'bg-green-600 text-white'
+                  ? 'bg-primary text-white'
                   : 'bg-gray-100 text-gray-600'
                 }
               `}>
@@ -83,7 +83,7 @@ export function LocationSelector({
               {/* Selection Indicator */}
               {selectedLocation === location.id && (
                 <div className="absolute top-4 right-4">
-                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                  <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>

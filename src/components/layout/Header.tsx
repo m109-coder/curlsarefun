@@ -25,8 +25,8 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 min-h-[44px]">
-            <Scissors className="w-6 h-6 text-green-700" />
-            <span className="text-lg sm:text-2xl font-bold text-gray-900 tracking-tight">CURLS ARE FUN</span>
+            <Scissors className="w-6 h-6 text-primary" />
+            <span className="text-lg sm:text-2xl font-bold font-display text-neutral-dark tracking-tight">CURLS ARE FUN</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -35,7 +35,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-gray-700 hover:text-green-700 transition-colors duration-200 text-sm font-medium"
+                className="text-gray-700 hover:text-primary transition-colors duration-200 text-sm font-medium"
               >
                 {link.label}
               </Link>
@@ -46,7 +46,7 @@ export function Header() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Link
               href="/booking"
-              className="hidden md:inline-flex px-5 py-2.5 bg-green-700 text-white rounded-xl font-medium hover:bg-green-800 transition-all duration-200 min-h-[44px] items-center"
+              className="hidden md:inline-flex px-6 py-2.5 bg-primary text-white rounded-full font-body font-semibold hover:bg-primary-dark transition-all duration-200 min-h-[44px] items-center"
             >
               Book Appointment
             </Link>
@@ -57,7 +57,7 @@ export function Header() {
             >
               <ShoppingCart className="w-6 h-6" />
               {cartCount > 0 && (
-                <span className="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute top-0 right-0 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
@@ -92,7 +92,7 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={closeMenu}
-                className="block w-full py-2 text-gray-900 hover:text-green-700 transition-colors"
+                className="block w-full py-2 text-gray-900 hover:text-primary transition-colors"
               >
                 {link.label}
               </Link>
@@ -104,7 +104,7 @@ export function Header() {
             <Link
               href="/booking"
               onClick={closeMenu}
-              className="block w-full py-4 bg-green-600 text-white rounded-xl text-center text-lg font-semibold hover:bg-green-700 transition-all duration-200 min-h-[56px]"
+              className="block w-full py-4 bg-primary text-white rounded-full text-center text-lg font-body font-semibold hover:bg-primary-dark transition-all duration-200 min-h-[56px]"
             >
               Book Appointment
             </Link>

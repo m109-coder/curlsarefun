@@ -14,7 +14,7 @@ interface ServiceSelectorProps {
 }
 
 const categoryConfig: Record<string, { label: string; icon: React.ReactNode; color: string; badge: string }> = {
-  care: { label: 'Care', icon: <Droplets className="w-6 h-6" />, color: 'bg-green-100 text-green-600', badge: 'bg-green-100 text-green-800' },
+  care: { label: 'Care', icon: <Droplets className="w-6 h-6" />, color: 'bg-tertiary text-primary', badge: 'bg-tertiary text-green-800' },
   color: { label: 'Color', icon: <Palette className="w-6 h-6" />, color: 'bg-purple-100 text-purple-600', badge: 'bg-purple-100 text-purple-800' },
   haircuts: { label: 'Haircuts', icon: <Scissors className="w-6 h-6" />, color: 'bg-blue-100 text-blue-600', badge: 'bg-blue-100 text-blue-800' },
   salon: { label: 'Salón', icon: <Heart className="w-6 h-6" />, color: 'bg-pink-100 text-pink-600', badge: 'bg-pink-100 text-pink-800' },
@@ -63,7 +63,7 @@ export function ServiceSelector({
                     p-4 sm:p-5 rounded-2xl border-2 transition-all duration-200 text-left relative min-h-[120px]
                     active:scale-[0.99]
                     ${isSelected
-                      ? 'border-green-600 bg-green-50 shadow-lg'
+                      ? 'border-primary bg-tertiary/50 shadow-lg'
                       : 'border-gray-200 hover:border-gray-300 bg-white'
                     }
                   `}
@@ -71,7 +71,7 @@ export function ServiceSelector({
                   <div className="flex items-start space-x-4">
                     <div className={`
                       w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center flex-shrink-0
-                      ${isSelected ? 'bg-green-600 text-white' : config.color}
+                      ${isSelected ? 'bg-primary text-white' : config.color}
                     `}>
                       {config.icon}
                     </div>
@@ -104,7 +104,7 @@ export function ServiceSelector({
 
                         <div className={`
                           w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
-                          ${isSelected ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-400'}
+                          ${isSelected ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'}
                         `}>
                           {isSelected ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                         </div>
@@ -121,7 +121,7 @@ export function ServiceSelector({
         <div className="hidden lg:block lg:w-80">
           <div className="bg-white border border-gray-200 rounded-2xl p-5 sticky top-4">
             <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center space-x-2">
-              <Heart className="w-5 h-5 text-green-600" />
+              <Heart className="w-5 h-5 text-primary" />
               <span>Your Appointment</span>
             </h3>
 
@@ -164,14 +164,14 @@ export function ServiceSelector({
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Deposit required</span>
-                    <span className="font-medium text-green-600">${totalDeposit.toFixed(2)}</span>
+                    <span className="font-medium text-primary">${totalDeposit.toFixed(2)}</span>
                   </div>
                 </div>
 
                 <button
                   onClick={onContinue}
                   disabled={selectedServiceObjects.length === 0}
-                  className="w-full py-3.5 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px]"
+                  className="w-full py-3.5 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px]"
                 >
                   Continue
                 </button>
@@ -191,13 +191,13 @@ export function ServiceSelector({
             </div>
             <div className="text-right">
               <p className="text-xs text-gray-500">Deposit</p>
-              <p className="font-semibold text-green-600">${totalDeposit.toFixed(2)}</p>
+              <p className="font-semibold text-primary">${totalDeposit.toFixed(2)}</p>
             </div>
           </div>
           <button
             onClick={onContinue}
             disabled={selectedServiceObjects.length === 0}
-            className="w-full py-3.5 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px]"
+            className="w-full py-3.5 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px]"
           >
             Continue
           </button>

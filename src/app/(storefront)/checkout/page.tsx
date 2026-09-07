@@ -137,13 +137,13 @@ function CheckoutPageContent() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/products"
-                className="px-6 py-3.5 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-all min-h-[52px] flex items-center justify-center"
+                className="px-6 py-3.5 bg-primary text-white rounded-full font-body font-semibold hover:bg-primary-dark transition-all min-h-[52px] flex items-center justify-center"
               >
                 Shop Products
               </Link>
               <Link
                 href="/booking"
-                className="px-6 py-3.5 border border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-50 transition-all min-h-[52px] flex items-center justify-center"
+                className="px-6 py-3.5 border border-primary text-primary rounded-full font-body font-semibold hover:bg-tertiary/50 transition-all min-h-[52px] flex items-center justify-center"
               >
                 Book Appointment
               </Link>
@@ -189,8 +189,8 @@ function CheckoutPageContent() {
               {appointment && (
                 <div className="flex justify-between items-center py-2 border-b border-gray-200 last:border-0">
                   <div className="flex items-center space-x-3 min-w-0">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-tertiary rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                     </div>
                     <div className="min-w-0">
                       <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{appointment.serviceName}</p>
@@ -226,7 +226,7 @@ function CheckoutPageContent() {
 
               <div className="flex justify-between items-center pt-2">
                 <span className="text-gray-900 font-semibold text-base sm:text-lg">Total to pay now</span>
-                <span className="text-xl sm:text-2xl font-bold text-green-700">${totalAmount.toFixed(2)}</span>
+                <span className="text-xl sm:text-2xl font-bold text-primary">${totalAmount.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -235,7 +235,7 @@ function CheckoutPageContent() {
             <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-3">Payment Option</h2>
               <div className="space-y-3">
-                <label className="flex items-start p-4 border rounded-xl cursor-pointer hover:bg-gray-50 has-[:checked]:border-green-500 has-[:checked]:bg-green-50 transition-colors">
+                <label className="flex items-start p-4 border rounded-xl cursor-pointer hover:bg-tertiary/40 has-[:checked]:border-primary has-[:checked]:bg-tertiary transition-colors">
                   <input
                     type="radio"
                     name="paymentOption"
@@ -252,7 +252,7 @@ function CheckoutPageContent() {
                   </div>
                 </label>
 
-                <label className="flex items-start p-4 border rounded-xl cursor-pointer hover:bg-gray-50 has-[:checked]:border-green-500 has-[:checked]:bg-green-50 transition-colors">
+                <label className="flex items-start p-4 border rounded-xl cursor-pointer hover:bg-tertiary/40 has-[:checked]:border-primary has-[:checked]:bg-tertiary transition-colors">
                   <input
                     type="radio"
                     name="paymentOption"
@@ -293,11 +293,11 @@ function CheckoutPageContent() {
           )}
 
           {appointment && (
-            <div className="mt-6 sm:mt-8 bg-blue-50 border border-blue-100 rounded-2xl p-4 sm:p-5 flex items-start space-x-3">
-              <Clock className="w-5 h-5 text-blue-700 flex-shrink-0 mt-0.5" />
+            <div className="mt-6 sm:mt-8 bg-tertiary/60 border border-secondary/30 rounded-2xl p-4 sm:p-5 flex items-start space-x-3">
+              <Clock className="w-5 h-5 text-neutral-dark flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-sm font-semibold text-blue-900 mb-1">Booking Hold Active</h3>
-                <p className="text-sm text-blue-700">
+                <h3 className="text-sm font-semibold text-neutral-dark mb-1">Booking Hold Active</h3>
+                <p className="text-sm text-neutral-dark/80">
                   Complete payment by {appointment.expiresAt ? new Date(appointment.expiresAt).toLocaleTimeString() : 'soon'} to confirm your appointment.
                 </p>
               </div>
@@ -305,11 +305,11 @@ function CheckoutPageContent() {
           )}
 
           {!appointment && (
-            <div className="mt-6 sm:mt-8 bg-green-50 border border-green-100 rounded-2xl p-4 sm:p-5 flex items-start space-x-3">
-              <Shield className="w-5 h-5 text-green-700 flex-shrink-0 mt-0.5" />
+            <div className="mt-6 sm:mt-8 bg-tertiary/60 border border-secondary/30 rounded-2xl p-4 sm:p-5 flex items-start space-x-3">
+              <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-sm font-semibold text-green-900 mb-1">Secure Payment</h3>
-                <p className="text-sm text-green-700">Powered by Stripe — PCI compliant. Your payment information is encrypted.</p>
+                <h3 className="text-sm font-semibold text-neutral-dark mb-1">Secure Payment</h3>
+                <p className="text-sm text-neutral-dark/80">Powered by Stripe — PCI compliant. Your payment information is encrypted.</p>
               </div>
             </div>
           )}
@@ -321,7 +321,7 @@ function CheckoutPageContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-green-600" /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-tertiary/30 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
       <CheckoutPageContent />
     </Suspense>
   );
