@@ -28,6 +28,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ authenticated: false, reason });
     }
   } catch (error) {
-    return NextResponse.json({ authenticated: false, reason: 'handler-error' });
+    const msg = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    console.error('[verify] outer handler error:', msg);
+    return NextResponse.json({ authenticated: false, reason: 'handler-error', debug: msg });
   }
 }
