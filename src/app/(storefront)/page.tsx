@@ -60,8 +60,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Locations Section */}
-      <section className="bg-tertiary pb-24 pt-4">
+      {/* Locations Section — no bottom padding so the wave sits flush at the edge */}
+      <section className="bg-tertiary pt-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-display text-3xl sm:text-4xl text-center text-neutral-dark mb-12">
             Our Locations
@@ -72,7 +72,7 @@ export default async function HomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="bg-white py-20">
+      <section className="bg-white pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
             <h2 className="font-display text-3xl sm:text-4xl text-neutral-dark">Featured Products</h2>
