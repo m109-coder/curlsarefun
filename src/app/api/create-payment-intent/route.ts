@@ -53,12 +53,13 @@ export async function POST(request: NextRequest) {
     let bookingAmount = 0;
     let productTotal = 0;
 
-    // Product items have a variantId and are not the appointment placeholder.
+    // Product items: everything that is not the appointment placeholder.
+    // NOTE: `variantId` is NOT required here — it is only needed later for the
+    // Shopify order line item. Items persisted in localStorage may lack it, and
+    // filtering them out made the server compute $0 for products, producing a
+    // spurious "Payment amount mismatch" 400 on combined checkouts.
     const productItems = (items || []).filter(
-      (item: any) =>
-        !item.appointmentId &&
-        (item.variantId || item.variant_id) &&
-        Number(item.quantity || 0) > 0
+      (item: any) => !item.appointmentId && Number(item.quantity || 0) > 0
     );
     const computedProductTotal = productItems.reduce(
       (sum: number, item: any) => sum + Number(item.price || 0) * Number(item.quantity || 1),
@@ -157,14 +158,20 @@ export async function POST(request: NextRequest) {
 
     // Sanity check: the client amount must match the server-computed total
     if (Math.abs(finalAmount - Number(amount)) > 0.01) {
-      console.warn(`Payment amount mismatch: client=${amount}, server=${finalAmount}`);
+      console.warn(
+        `Payment amount mismatch: client=${amount}, server=${finalAmount} ` +
+        `(products=${productTotal}, booking=${bookingAmount}, items=${(items || []).length})`
+      );
       return NextResponse.json(
-        { error: 'Payment amount mismatch. Please refresh and try again.' },
+        {
+          error: 'Payment amount mismatch. Please refresh and try again.',
+          details: `expected ${finalAmount.toFixed(2)}, received ${Number(amount).toFixed(2)}`,
+        },
         { status: 400 }
       );
     }
 
-    if (finalAmount <= 0) {
+    if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
       return NextResponse.json(
         { error: 'Invalid payment amount' },
         { status: 400 }
