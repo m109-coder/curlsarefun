@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const token = request.cookies.get('admin-token')?.value;
 
     if (!token) {
-      return NextResponse.json({ authenticated: false });
+      return NextResponse.json({ authenticated: false, reason: 'no-cookie' });
     }
 
     try {
@@ -23,9 +23,11 @@ export async function GET(request: NextRequest) {
         }
       });
     } catch (error) {
-      return NextResponse.json({ authenticated: false });
+      const reason = error instanceof Error ? error.message : 'jwt-error';
+      console.error('[verify] jwt.verify failed:', reason);
+      return NextResponse.json({ authenticated: false, reason });
     }
   } catch (error) {
-    return NextResponse.json({ authenticated: false });
+    return NextResponse.json({ authenticated: false, reason: 'handler-error' });
   }
 }
