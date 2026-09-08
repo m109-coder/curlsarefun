@@ -14,6 +14,12 @@ import { Home, Sparkles, MapPin, CalendarCheck } from 'lucide-react';
 export function MobileBottomNav() {
   const pathname = usePathname();
 
+  // Hide the bar inside conversion flows (booking wizard, checkout, success)
+  // so it never covers the primary CTA buttons.
+  if (pathname.startsWith('/booking') || pathname.startsWith('/checkout')) {
+    return null;
+  }
+
   const items = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/services', label: 'Services', icon: Sparkles },
