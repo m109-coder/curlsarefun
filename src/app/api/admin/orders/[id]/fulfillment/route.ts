@@ -3,6 +3,14 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
 
+/**
+ * POST /api/admin/orders/{id}/fulfillment
+ *
+ * Stub for fulfillment actions on a Shopify order. Not implemented;
+ * admins must use the Shopify admin panel to fulfill orders.
+ *
+ * Requires a valid `admin-token` JWT cookie.
+ */
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }

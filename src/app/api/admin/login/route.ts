@@ -17,6 +17,18 @@ const TEMP_ADMIN_USER = {
   role: 'admin',
 };
 
+/**
+ * POST /api/admin/login
+ *
+ * Authenticates an admin user and issues an `admin-token` HttpOnly
+ * cookie. Tries the database first and falls back to a hardcoded user
+ * when the database is unavailable (development/test only).
+ *
+ * Body: { email: string, password: string }
+ *
+ * @security The temporary fallback user must be removed before production.
+ * @returns { success, user, token } and sets the `admin-token` cookie.
+ */
 export async function POST(request: NextRequest) {
   try {
     console.log('=== LOGIN REQUEST START ===');

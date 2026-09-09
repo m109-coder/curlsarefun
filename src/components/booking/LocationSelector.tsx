@@ -9,10 +9,18 @@ interface LocationSelectorProps {
   onLocationSelect: (locationId: string) => void;
 }
 
+/**
+ * Step 1 of the booking wizard: card grid to pick a salon location.
+ *
+ * @param selectedLocation - currently selected location id (or '').
+ * @param onLocationSelect - called with the location id on click.
+ * Locations come from the static `salonLocations` config.
+ */
 export function LocationSelector({
   selectedLocation,
   onLocationSelect,
 }: LocationSelectorProps) {
+  /** Maps known location ids to a representative icon. */
   const getLocationIcon = (locationId: string) => {
     switch (locationId) {
       case 'new-york':

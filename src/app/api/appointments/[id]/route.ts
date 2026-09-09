@@ -3,6 +3,15 @@ import { prisma } from '@/lib/db/prisma';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * GET /api/appointments/{id}
+ *
+ * Retrieves a public-safe view of an appointment for the checkout page.
+ * Returns only the deposit, balance and basic client information needed
+ * to render the payment UI. Services are sorted by executionOrder.
+ *
+ * @returns Appointment details with payment and balance fields.
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -23,6 +32,7 @@ export async function GET(
     }
 
     const guests = appointment.guestCount || 1;
+    // Compute total deposit from all services multiplied by guest count
     const baseDeposit = appointment.services.reduce((sum, s) => sum + Number(s.depositAmount), 0);
     const totalDeposit = baseDeposit * guests;
     const totalPrice = Number(appointment.totalAmount);

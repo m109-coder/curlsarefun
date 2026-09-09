@@ -1,6 +1,11 @@
 import { getAllProducts } from '@/lib/shopify/queries/products';
 import { ProductCard } from '@/components/shop/ProductCard';
 
+/**
+ * Product catalog page (server component).
+ * Fetches all products from the Shopify Storefront API and renders them
+ * as a responsive `ProductCard` grid.
+ */
 export default async function ProductsPage() {
   const products = await getAllProducts();
   const productList = products?.products?.edges?.map((edge: any) => edge.node) || [];

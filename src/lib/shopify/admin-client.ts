@@ -217,6 +217,10 @@ export const GET_ORDER_QUERY = `
   }
 `;
 
+/**
+ * Fetches a single order by its GraphQL global id (e.g. `gid://shopify/Order/123`).
+ * Returns `null` when the order doesn't exist; re-throws on API errors.
+ */
 export async function getShopifyOrderById(id: string) {
   try {
     const data = await shopifyAdminRequest(GET_ORDER_QUERY, { id });
@@ -338,6 +342,13 @@ export async function createShopifyDraftOrder(draftOrderData: any) {
   return data.draft_order;
 }
 
+/**
+ * Sums the gross total across a mixed list of orders.
+ *
+ * @remarks
+ * Accepts both GraphQL orders (`totalPriceSet.shopMoney.amount`) and REST
+ * orders (`total_price`) since the dashboard mixes both response shapes.
+ */
 export async function getShopifyRevenue(orders: any[]): Promise<number> {
   return orders.reduce((total, order) => {
     if (order.totalPriceSet?.shopMoney?.amount) {

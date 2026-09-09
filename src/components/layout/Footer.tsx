@@ -1,5 +1,9 @@
 import Link from 'next/link';
 
+/**
+ * Storefront footer: brand blurb, quick links, salon locations and contact
+ * info. Purely presentational.
+ */
 export function Footer() {
   return (
     <footer className="bg-neutral-dark text-white">

@@ -7,6 +7,15 @@ export const dynamic = 'force-dynamic';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
 
+/**
+ * GET /api/admin/appointments?locationId=...&start=...&end=...
+ *
+ * Protected admin endpoint that lists appointments for the calendar.
+ * Optionally filters by location and a date range. Returns each
+ * appointment with client and services (sorted by executionOrder).
+ *
+ * Requires a valid `admin-token` JWT cookie.
+ */
 export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get('admin-token')?.value;
@@ -26,6 +35,7 @@ export async function GET(request: NextRequest) {
     const start = searchParams.get('start');
     const end = searchParams.get('end');
 
+    // Build Prisma where clause from optional query parameters
     const where: any = {};
 
     if (locationId && locationId !== 'all') {

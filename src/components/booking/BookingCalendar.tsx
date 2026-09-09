@@ -19,6 +19,19 @@ interface BookingCalendarProps {
   selectedTime?: string;
 }
 
+/**
+ * Step 4 of the booking wizard: month calendar + available time slots.
+ *
+ * Dates are only selectable when the location is open and not in the past.
+ * Slots are fetched from `/api/availability` for the selected date and
+ * `serviceDuration`. Times are shown in the salon's timezone, with an
+ * optional toggle to convert them to the user's local timezone.
+ *
+ * @param locationId - salon location (determines timezone and open days).
+ * @param serviceDuration - total minutes needed; used by the availability API.
+ * @param onDateSelect / onTimeSelect - selection callbacks.
+ * @param selectedDate / selectedTime - current selection.
+ */
 export function BookingCalendar({
   locationId,
   serviceDuration,
@@ -72,6 +85,7 @@ export function BookingCalendar({
     );
   };
 
+  /** Builds the calendar cells: leading `null` padding, then each day. */
   const getDaysInMonth = () => {
     const startOfMonth = currentMonth.startOf('month');
     const endOfMonth = currentMonth.endOf('month');
@@ -89,6 +103,7 @@ export function BookingCalendar({
     return days;
   };
 
+  /** A day is selectable only if it's not in the past and the salon is open. */
   const isDateSelectable = (date: DateTime) => {
     if (!date) return false;
     if (date < DateTime.local().startOf('day')) return false;
@@ -100,6 +115,7 @@ export function BookingCalendar({
     onDateSelect(date.toJSDate());
   };
 
+  /** Formats an "HH:mm" slot in salon time or converted to the user's zone. */
   const formatTimeForDisplay = (time: string) => {
     if (useUserTimezone) {
       const salonDateTime = DateTime.fromFormat(time, 'HH:mm', { zone: location?.timezone });

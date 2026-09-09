@@ -12,6 +12,14 @@ function timeToMinutes(time: string): number {
   return hours * 60 + minutes;
 }
 
+/**
+ * GET /api/admin/appointments/{id}
+ *
+ * Returns a single appointment with client and services for the
+ * admin edit/details view. Services are sorted by executionOrder.
+ *
+ * Requires a valid `admin-token` JWT cookie.
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -45,6 +53,18 @@ export async function GET(
   }
 }
 
+/**
+ * PATCH /api/admin/appointments/{id}
+ *
+ * Updates an existing appointment. Resolves the final service list,
+ * recalculates duration, price, deposit and balance due, and adjusts
+ * the end time accordingly. Supports status, payment and notes edits.
+ *
+ * Body (all optional): date, startTime, status, serviceIds, guestCount,
+ * notes, depositPaid, amountPaid, paymentOption.
+ *
+ * Requires a valid `admin-token` JWT cookie.
+ */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -82,6 +102,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Appointment not found' }, { status: 404 });
     }
 
+    // Apply fallbacks for omitted optional fields
     const finalGuestCount = typeof guestCount === 'number' && guestCount > 0 ? guestCount : existing.guestCount;
     const finalDate = date ? new Date(date) : existing.date;
     const finalStartTime = startTime || existing.startTime;
@@ -98,6 +119,7 @@ export async function PATCH(
       where: { id: { in: servicesToConnect }, locationId: existing.locationId },
     });
 
+    // Aggregate selected services and multiply by guest count
     const baseDuration = services.reduce((sum, s) => sum + s.duration, 0);
     const basePrice = services.reduce((sum, s) => sum + Number(s.price), 0);
     const baseDeposit = services.reduce((sum, s) => sum + Number(s.depositAmount), 0);
@@ -112,7 +134,7 @@ export async function PATCH(
     const endMinutes = totalMinutes % 60;
     const endTime = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
 
-    // For PENDING_PAYMENT or COMPLETED, balanceDue depends on payment state
+    // Recalculate outstanding balance based on payment option and amount paid
     let balanceDue = Number(existing.balanceDue);
     if (finalStatus === 'CONFIRMED' && !finalPaymentOption) {
       balanceDue = 0;

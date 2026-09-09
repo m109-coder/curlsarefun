@@ -5,6 +5,11 @@ import { useCart } from '@/context/CartContext';
 import { ShoppingCart, Menu, X, Scissors } from 'lucide-react';
 import { useState } from 'react';
 
+/**
+ * Sticky storefront header: logo, desktop nav, booking CTA, cart button
+ * (with item-count badge that opens the CartDrawer), and a full-screen
+ * mobile menu.
+ */
 export function Header() {
   const { cartCount, setIsOpen } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

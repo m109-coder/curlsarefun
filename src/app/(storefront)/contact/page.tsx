@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+/**
+ * Contact page (client component).
+ * Controlled form that POSTs to `/api/contact` and shows inline
+ * success/error feedback.
+ */
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -22,6 +27,7 @@ export default function ContactPage() {
     });
   };
 
+  /** Submits the form to `/api/contact`; resets fields on success. */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);

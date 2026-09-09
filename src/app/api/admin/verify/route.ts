@@ -6,6 +6,13 @@ const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-pro
 // This route reads cookies — it must never be statically prerendered.
 export const dynamic = 'force-dynamic';
 
+/**
+ * GET /api/admin/verify
+ *
+ * Validates the `admin-token` JWT cookie and returns the decoded
+ * admin identity. Returns `authenticated: false` when the cookie
+ * is missing, expired or invalid.
+ */
 export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get('admin-token')?.value;

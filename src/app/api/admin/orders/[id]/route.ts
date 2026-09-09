@@ -6,6 +6,13 @@ export const dynamic = 'force-dynamic';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
 
+/**
+ * GET /api/admin/orders/{id}
+ *
+ * Fetches a single Shopify order by its ID for the admin detail view.
+ *
+ * Requires a valid `admin-token` JWT cookie.
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }

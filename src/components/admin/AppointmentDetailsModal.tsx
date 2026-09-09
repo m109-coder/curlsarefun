@@ -46,6 +46,18 @@ interface AppointmentDetailsModalProps {
   onUpdate?: () => void;
 }
 
+/**
+ * Admin modal for viewing and editing an appointment.
+ *
+ * Fetches the appointment (and the location's service catalog for the edit
+ * form) from `/api/admin/appointments/:id`, supports PATCH updates for
+ * date/time/services/status/guests, and can cancel the appointment.
+ *
+ * @param appointmentId - appointment to load.
+ * @param onClose - closes the modal.
+ * @param onUpdate - optional callback fired after a successful edit/cancel
+ *   so the parent can refresh its list.
+ */
 export function AppointmentDetailsModal({ appointmentId, onClose, onUpdate }: AppointmentDetailsModalProps) {
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [services, setServices] = useState<Service[]>([]);
@@ -60,6 +72,7 @@ export function AppointmentDetailsModal({ appointmentId, onClose, onUpdate }: Ap
     guestCount: 1,
   });
 
+  /** Loads the appointment and seeds the edit form; also loads services. */
   const fetchAppointment = async () => {
     try {
       setLoading(true);
@@ -107,6 +120,7 @@ export function AppointmentDetailsModal({ appointmentId, onClose, onUpdate }: Ap
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appointmentId]);
 
+  /** PATCHes the edited fields, then refreshes the displayed appointment. */
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -138,6 +152,7 @@ export function AppointmentDetailsModal({ appointmentId, onClose, onUpdate }: Ap
     }
   };
 
+  /** Sets the appointment status to CANCELLED after confirmation. */
   const handleCancel = async () => {
     if (!confirm('Are you sure you want to cancel this appointment?')) return;
     try {

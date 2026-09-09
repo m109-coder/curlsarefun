@@ -10,6 +10,17 @@ function timeToMinutes(time: string): number {
   return hours * 60 + minutes;
 }
 
+/**
+ * GET /api/admin/dashboard
+ *
+ * Returns dashboard statistics: booking count, today's schedule,
+ * recent activity, active client count and optional Shopify order data.
+ * The database call is wrapped in a 10s race to prevent the dashboard
+ * from hanging on connection issues. Shopify data is fetched only when
+ * the admin access token is configured.
+ *
+ * Requires a valid `admin-token` JWT cookie.
+ */
 export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get('admin-token')?.value;
@@ -41,6 +52,7 @@ export async function GET(request: NextRequest) {
       const { prisma } = await import('@/lib/db/prisma');
       
       // Race with timeout to prevent hanging
+      // Race DB call with a 10s timeout to prevent UI hangs
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Database timeout')), 10000);
       });
@@ -129,6 +141,7 @@ export async function GET(request: NextRequest) {
     let totalOrders = 0;
     let revenue = 0;
 
+    // Fetch Shopify data only when the admin token is configured and not a placeholder
     if (process.env.SHOPIFY_ADMIN_ACCESS_TOKEN && process.env.SHOPIFY_ADMIN_ACCESS_TOKEN !== 'your-admin-api-token-here') {
       try {
         const { getShopifyOrders, getShopifyRevenue } = await import('@/lib/shopify/admin-client');
@@ -144,7 +157,8 @@ export async function GET(request: NextRequest) {
           time: new Date(order.created_at).toLocaleString(),
         }));
 
-        recentActivity = [...orderActivity, ...recentActivity].slice(0, 10);
+        // Merge Shopify orders on top of booking activity for the recent feed
+    recentActivity = [...orderActivity, ...recentActivity].slice(0, 10);
       } catch (shopifyError) {
         console.log('Shopify not available:', shopifyError);
       }

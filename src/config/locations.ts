@@ -1,6 +1,16 @@
 import { SalonLocation } from '@/types';
 import { getServiceCatalogByLocation } from '@/data/services';
 
+/**
+ * Static catalog of salon locations.
+ *
+ * @remarks
+ * `businessHours` here is **informational only** (display/config reference).
+ * The authoritative availability rules live in
+ * `src/lib/booking/timezone.ts#getLocationShiftsForDate`, because Boston's
+ * "first/last Mon or Sun of the month" rule cannot be expressed in a static
+ * weekday table. Keep both in sync when changing hours.
+ */
 export const salonLocations: SalonLocation[] = [
   {
     id: 'new-york',
@@ -70,10 +80,16 @@ export const salonLocations: SalonLocation[] = [
   },
 ];
 
+/** Looks up a location by its slug id (`new-york` | `boston` | `los-angeles`). */
 export function getLocationById(id: string): SalonLocation | undefined {
   return salonLocations.find(loc => loc.id === id);
 }
 
+/**
+ * Returns the IANA timezone for a location, defaulting to
+ * `"America/New_York"` when the id is unknown — a safe default because two of
+ * the three salons are on Eastern Time.
+ */
 export function getLocationTimezone(id: string): string {
   const location = getLocationById(id);
   return location?.timezone || 'America/New_York';

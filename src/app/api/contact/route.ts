@@ -10,6 +10,16 @@ function sanitizeInput(input: string): string {
     .trim();
 }
 
+/**
+ * POST /api/contact
+ *
+ * Accepts and sanitizes a public contact form submission.
+ * Validates that name, email and message are present and that the
+ * email looks valid. Inputs are HTML-escaped to reduce XSS risk.
+ *
+ * Note: this endpoint currently logs the submission and returns a
+ * success message. Email delivery and persistence are not wired yet.
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

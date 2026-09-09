@@ -27,6 +27,16 @@ interface AppointmentInfo {
   };
 }
 
+/**
+ * Unified checkout page (client component, inside `Suspense` for
+ * `useSearchParams`).
+ *
+ * Handles three cases: product-only cart, booking deposit/full payment
+ * (via `?appointmentId=`), or a combined order. Lets the user pick between
+ * paying the deposit or the full appointment amount, then renders
+ * `StripeCheckout`. On success it clears the cart and redirects to
+ * `/booking/success` with payment details in the query string.
+ */
 function CheckoutPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -44,6 +54,11 @@ function CheckoutPageContent() {
     }
   }, [appointmentId]);
 
+  /**
+   * Loads the appointment being paid for. Rejects appointments already paid
+   * in full, and defaults the payment option to 'full' when the deposit was
+   * already paid (remaining balance only).
+   */
   const fetchAppointment = async (id: string) => {
     try {
       setLoadingAppointment(true);
@@ -69,6 +84,11 @@ function CheckoutPageContent() {
     }
   };
 
+  /**
+   * Called by StripeCheckout after a successful payment. Clears the cart and
+   * the active booking hold, then redirects to the success page carrying the
+   * payment intent id, amounts and purchased items in the query string.
+   */
   const handlePaymentSuccess = (paymentIntentId: string) => {
     const query = new URLSearchParams();
     if (appointment?.id) query.set('bookingId', appointment.id);
@@ -84,19 +104,25 @@ function CheckoutPageContent() {
     router.push('/booking/success?' + query.toString());
   };
 
+  // Deposit is only due when it hasn't been paid yet
   const depositAmount = appointment && !appointment.depositPaid ? appointment.depositAmount : 0;
   const remainingBalance = appointment?.balanceDue || 0;
 
+  // Split: 'deposit' charges only the hold amount; 'full' charges everything
   const amountToPay = paymentOption === 'deposit'
     ? depositAmount
     : (appointment?.totalAmount || 0);
 
   const hasProducts = items.length > 0;
   const hasBooking = !!appointment && amountToPay > 0;
+  // cartTotal already includes the booking deposit when this booking is the
+  // active one, so subtract it to isolate the product subtotal
   const isBookingInCart = activeBooking?.id === appointment?.id;
   const productTotal = isBookingInCart ? cartTotal - depositAmount : cartTotal;
   const totalAmount = productTotal + amountToPay;
 
+  // Line items sent to the payment-intent API: cart products plus a single
+  // pseudo-item representing the appointment deposit/full payment
   const paymentItems = [
     ...items.map((item) => ({
       name: item.title,
@@ -319,6 +345,10 @@ function CheckoutPageContent() {
   );
 }
 
+/**
+ * Checkout page entry point. Wraps content in `Suspense` because
+ * `useSearchParams` requires a boundary under static rendering.
+ */
 export default function CheckoutPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-tertiary/30 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>

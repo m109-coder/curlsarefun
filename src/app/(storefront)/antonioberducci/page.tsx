@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   description: 'Meet Antonio Berducci, your curly hair guru. With 20 years of experience as both a stylist and educator in hair and makeup.',
 };
 
+/**
+ * Static bio page for Antonio Berducci (extended version of /about).
+ * Purely presentational.
+ */
 export default function AntonioPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

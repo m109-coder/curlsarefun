@@ -1,5 +1,6 @@
 // Common types that will be used across the application
 
+/** A physical salon location with its IANA timezone and display hours. */
 export interface SalonLocation {
   id: string;
   name: string;
@@ -20,10 +21,12 @@ export interface SalonLocation {
   services: Service[];
 }
 
+/** A bookable service. `executionOrder` defines in-chair order when several services are combined in one appointment. */
 export interface Service {
   id: string;
   name: string;
   description: string;
+  /** Duration in minutes per guest (multiply by `guestCount` at booking). */
   duration: number;
   price: number;
   depositAmount: number;
@@ -31,6 +34,7 @@ export interface Service {
   executionOrder: number;
 }
 
+/** A booking. `startTime`/`endTime` are `"HH:mm"` strings in `timezone` (salon-local), not UTC. */
 export interface Appointment {
   id: string;
   locationId: string;
@@ -47,6 +51,7 @@ export interface Appointment {
   notes?: string;
 }
 
+/** Subset of the Storefront API product shape used by the storefront UI. */
 export interface ShopifyProduct {
   id: string;
   title: string;
@@ -86,8 +91,10 @@ export interface ShopifyProduct {
   };
 }
 
+/** What a checkout charge covers: products only, a booking deposit/full payment, or a mixed cart. */
 export type PaymentType = 'product' | 'service_deposit' | 'service_full' | 'combined';
 
+/** A single payable unit passed to the checkout/payment intent creation. */
 export interface PaymentItem {
   id: string;
   type: PaymentType;

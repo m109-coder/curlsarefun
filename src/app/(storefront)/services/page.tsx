@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   description: 'Professional curly hair services.',
 };
 
+/**
+ * Static services overview page. Each card deep-links into the booking
+ * wizard (`/booking`).
+ */
 export default function ServicesPage() {
   const services = [
     {

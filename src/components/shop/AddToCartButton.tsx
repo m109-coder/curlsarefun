@@ -8,6 +8,13 @@ interface AddToCartButtonProps {
   variantId: string;
 }
 
+/**
+ * "Add to Cart" button for the product detail page.
+ *
+ * @param product - Shopify product node.
+ * @param variantId - the variant to add; disables itself when missing or
+ *   out of stock. Opens the cart drawer on add.
+ */
 export function AddToCartButton({ product, variantId }: AddToCartButtonProps) {
   const { addItem, setIsOpen } = useCart();
 

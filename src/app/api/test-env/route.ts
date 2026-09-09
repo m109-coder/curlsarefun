@@ -3,6 +3,13 @@ import { prisma } from '@/lib/db/prisma';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * GET /api/test-env
+ *
+ * Diagnostic endpoint that reports which environment variables are
+ * set, the parsed database host, and a quick database connectivity
+ * test. Exposes only the presence/availability of config, not secrets.
+ */
 export async function GET(request: NextRequest) {
   const envCheck = {
     DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not set',

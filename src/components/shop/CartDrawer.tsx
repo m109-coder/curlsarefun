@@ -6,6 +6,7 @@ import { X, Plus, Minus, ShoppingBag, ChevronRight, Calendar, Clock, MapPin } fr
 import Image from 'next/image';
 import Link from 'next/link';
 
+/** Live `m:ss` countdown until a booking hold expires. */
 function CountdownTimer({ expiresAt }: { expiresAt: string }) {
   const [timeLeft, setTimeLeft] = useState('');
 
@@ -29,6 +30,10 @@ function CountdownTimer({ expiresAt }: { expiresAt: string }) {
   return <span className="font-mono font-medium">{timeLeft}</span>;
 }
 
+/**
+ * Cart row for the pending booking deposit: shows service, location, time,
+ * an expiry countdown and a direct link to checkout for that appointment.
+ */
 function BookingCard({ booking }: { booking: ActiveBooking }) {
   const { removeActiveBooking, setIsOpen } = useCart();
 
@@ -84,6 +89,11 @@ function BookingCard({ booking }: { booking: ActiveBooking }) {
   );
 }
 
+/**
+ * Slide-out cart drawer (right side). Lists product items with quantity
+ * controls plus the active booking card, and links to checkout — with
+ * `?appointmentId=` when a booking hold is active.
+ */
 export function CartDrawer() {
   const {
     items,
@@ -97,6 +107,7 @@ export function CartDrawer() {
   } = useCart();
 
   const hasItems = items.length > 0 || !!activeBooking;
+  // Route checkout through the appointment flow when a booking is held
   const checkoutHref = activeBooking
     ? `/checkout?appointmentId=${activeBooking.id}`
     : '/checkout';

@@ -6,6 +6,12 @@ interface ProductPageProps {
   params: { handle: string };
 }
 
+/**
+ * Product detail page (server component).
+ *
+ * @param params.handle - Shopify product handle from the URL slug.
+ * Uses the first variant for pricing and the AddToCart button.
+ */
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const product = await getProductByHandle(params.handle);
   const productData = product?.productByHandle;

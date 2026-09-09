@@ -31,9 +31,21 @@ export interface ItineraryItem {
 }
 
 /**
- * Genera un itinerario desglosado por servicio.
- * Cada servicio se calcula sumando la duración acumulada del anterior.
- * La duración de cada servicio se multiplica por guestCount.
+ * Builds a per-service itinerary starting at `startTime`.
+ *
+ * @remarks
+ * - Services are executed in `executionOrder`; each start time is the
+ *   cumulative end of the previous service (no gaps between services).
+ * - Each service's duration is multiplied by `guestCount` (every guest
+ *   receives the service sequentially).
+ * - A final "cleanup" entry of `bufferMinutes` is appended — displayed in the
+ *   confirmation email so clients see the full chair time.
+ *
+ * @param services - Booked services (unsorted input is fine).
+ * @param startTime - `"HH:mm"` salon-local appointment start.
+ * @param guestCount - Number of guests; scales each service duration.
+ * @param bufferMinutes - Cleanup buffer appended at the end (default 15).
+ * @returns Ordered list of `{ startTime, endTime, name, durationMinutes }`.
  */
 export function generateItinerary(
   services: ServiceLike[],
@@ -86,6 +98,11 @@ function formatTime12Hour(time24: string): string {
   return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
 }
 
+/**
+ * Renders the inline-HTML confirmation email (table-based for email client
+ * compatibility). The appointment date is formatted in the appointment's own
+ * timezone via Luxon, not the server's local zone.
+ */
 function buildConfirmationHtml(
   appointment: AppointmentLike,
   services: ServiceLike[],
@@ -136,8 +153,16 @@ function buildConfirmationHtml(
 }
 
 /**
- * Envía el correo de confirmación. Si RESEND_API_KEY está configurado, usa Resend;
- * de lo contrario, registra el contenido en consola para desarrollo.
+ * Sends the booking confirmation email via the Resend HTTP API.
+ *
+ * @remarks
+ * When `RESEND_API_KEY` is not configured the email is logged to the console
+ * and reported as success — this keeps local/dev flows working without a
+ * provider and must not break the payment flow. Callers typically attach
+ * `.catch()` and treat delivery as best-effort.
+ *
+ * @returns `{ success: true }` on send (or dev log), `{ success: false,
+ *   message }` on provider/transport errors — it never throws.
  */
 export async function sendBookingConfirmation(
   appointment: AppointmentLike,

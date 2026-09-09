@@ -18,6 +18,12 @@ interface StripeCheckoutProps {
   onCancel: () => void;
 }
 
+/**
+ * Inner Stripe Elements form. Confirms the card payment with the
+ * `clientSecret` created by the parent and reports the resulting
+ * PaymentIntent id via `onSuccess`. Stripe renders any 3D Secure
+ * challenge automatically during `confirmCardPayment`.
+ */
 function CheckoutForm({
   amount,
   clientInfo,
@@ -155,6 +161,23 @@ function CheckoutForm({
   );
 }
 
+/**
+ * Stripe payment section for the checkout page.
+ *
+ * Creates a PaymentIntent via `POST /api/create-payment-intent` whenever
+ * the amount/items/appointment inputs change, then mounts Stripe Elements
+ * with the returned client secret.
+ *
+ * @param amount - total charge in dollars.
+ * @param paymentType - 'booking' | 'product' | 'combined' (drives server-side
+ *   fulfillment: appointment confirmation vs Shopify order creation).
+ * @param paymentOption - 'deposit' or 'full' for booking payments.
+ * @param items - line items (products + the booking pseudo-item).
+ * @param clientInfo - billing name/email for the payment method.
+ * @param appointmentId - appointment being paid, if any.
+ * @param onSuccess - called with the succeeded PaymentIntent id.
+ * @param onCancel - user cancelled payment.
+ */
 export function StripeCheckout({
   amount,
   paymentType,

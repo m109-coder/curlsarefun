@@ -5,6 +5,18 @@ import { prisma } from '@/lib/db/prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
 
+/**
+ * POST /api/admin/charge-balance
+ *
+ * Charges the remaining balance of an appointment off-session in Stripe.
+ * Requires the client to have a Stripe customer ID and a saved payment
+ * method. Updates the appointment's `amountPaid`, `balanceDue` and
+ * `depositPaid` flags when the payment succeeds.
+ *
+ * Body: { appointmentId: string }
+ *
+ * Security: only authenticated admins can trigger off-session charges.
+ */
 export async function POST(request: NextRequest) {
   try {
     const token = request.cookies.get('admin-token')?.value;
@@ -47,6 +59,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No saved payment method' }, { status: 400 });
     }
 
+    // Convert dollar balance to cents for Stripe
     const balanceDueCents = Math.round(Number(appointment.balanceDue) * 100);
 
     try {
@@ -58,6 +71,7 @@ export async function POST(request: NextRequest) {
         off_session: true,
         confirm: true,
         description: `Remaining balance for ${appointment.services.map(s => s.name).join(' + ') || 'Service'} - ${appointment.client.name}`,
+        // Attach appointment context for reconciliation and reporting
         metadata: {
           appointment_id: appointmentId,
           payment_type: 'balance_charge',

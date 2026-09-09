@@ -3,6 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+/**
+ * Client-side auth gate for admin pages.
+ *
+ * Calls `GET /api/admin/verify` on mount; redirects to `/admin/login` when
+ * the session cookie is missing or invalid, and renders children only once
+ * authenticated.
+ */
 export default function AuthProtection({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);

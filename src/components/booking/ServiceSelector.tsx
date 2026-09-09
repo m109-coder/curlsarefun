@@ -13,6 +13,7 @@ interface ServiceSelectorProps {
   onContinue: () => void;
 }
 
+/** Visual config (label, icon, colors) per service category. */
 const categoryConfig: Record<string, { label: string; icon: React.ReactNode; color: string; badge: string }> = {
   care: { label: 'Care', icon: <Droplets className="w-6 h-6" />, color: 'bg-tertiary text-primary', badge: 'bg-tertiary text-green-800' },
   color: { label: 'Color', icon: <Palette className="w-6 h-6" />, color: 'bg-purple-100 text-purple-600', badge: 'bg-purple-100 text-purple-800' },
@@ -23,10 +24,24 @@ const categoryConfig: Record<string, { label: string; icon: React.ReactNode; col
   other: { label: 'Other', icon: <User className="w-6 h-6" />, color: 'bg-gray-100 text-gray-600', badge: 'bg-gray-100 text-gray-800' },
 };
 
+/** Returns the visual config for a category, defaulting to 'other'. */
 function getCategoryConfig(category: string) {
   return categoryConfig[category] || categoryConfig.other;
 }
 
+/**
+ * Step 2 of the booking wizard: multi-select service picker.
+ *
+ * Shows the services offered by the selected location (sorted by
+ * `executionOrder`) with per-service price/deposit/duration, plus a live
+ * summary sidebar (desktop) and a sticky bottom bar (mobile) with totals.
+ *
+ * @param locationId - location whose services are listed.
+ * @param selectedServices - ids of currently selected services.
+ * @param onServiceToggle - add/remove a service.
+ * @param onServiceRemove - remove a service from the summary list.
+ * @param onContinue - advance to the next step.
+ */
 export function ServiceSelector({
   locationId,
   selectedServices,
@@ -35,6 +50,7 @@ export function ServiceSelector({
   onContinue,
 }: ServiceSelectorProps) {
   const location = getLocationById(locationId);
+  // Services are displayed/executed in a fixed order defined by executionOrder
   const services = (location?.services || []).slice().sort((a, b) => a.executionOrder - b.executionOrder);
   const selectedServiceObjects = services.filter(s => selectedServices.includes(s.id));
 

@@ -48,11 +48,13 @@ interface OrderDetailsModalProps {
   onClose: () => void;
 }
 
+/** Extracts the numeric id from a Shopify GID like `gid://shopify/Order/123`. */
 function extractOrderId(gid: string): string | null {
   const match = gid.match(/Order\/(\d+)/);
   return match ? match[1] : null;
 }
 
+/** Builds a deep link to the order in the Shopify admin, or '#' if unresolvable. */
 function getShopifyAdminUrl(orderId: string): string {
   const numericId = extractOrderId(orderId);
   const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || process.env.SHOPIFY_STORE_DOMAIN;
@@ -60,6 +62,17 @@ function getShopifyAdminUrl(orderId: string): string {
   return `https://${domain}/admin/orders/${numericId}`;
 }
 
+/**
+ * Admin modal showing a Shopify order's details: status badges, totals,
+ * line items, fulfillments and fulfillment actions (fulfill / cancel).
+ *
+ * Customer PII (name, address) is intentionally not displayed — Shopify
+ * requires approved protected-data permissions for those fields; the modal
+ * surfaces a notice when the API reports `PII_REQUIRED`.
+ *
+ * @param orderId - Shopify order GID.
+ * @param onClose - closes the modal.
+ */
 export function OrderDetailsModal({ orderId, onClose }: OrderDetailsModalProps) {
   const [order, setOrder] = useState<ShopifyOrder | null>(null);
   const [loading, setLoading] = useState(true);
@@ -101,6 +114,7 @@ export function OrderDetailsModal({ orderId, onClose }: OrderDetailsModalProps) 
     fetchOrder();
   }, [orderId]);
 
+  /** Calls the admin fulfillment endpoint ('fulfill' | 'cancel') and refreshes the order. */
   const handleFulfillmentAction = async (action: 'fulfill' | 'cancel') => {
     setUpdatingFulfillment(true);
     try {

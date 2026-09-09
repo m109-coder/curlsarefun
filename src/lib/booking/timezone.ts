@@ -21,7 +21,12 @@ export function convertToSalonTime(
 }
 
 /**
- * Convierte una fecha/hora del salón a la zona horaria del usuario
+ * Converts a salon-local `Date` into the user's timezone.
+ *
+ * @param salonDate - Instant expressed as salon wall-clock time.
+ * @param locationId - Salon location id (source timezone lookup).
+ * @param userTimezone - IANA zone; defaults to the runtime's local zone.
+ * @returns Luxon `DateTime` in the user's timezone.
  */
 export function convertFromSalonTime(
   salonDate: Date,
@@ -36,15 +41,17 @@ export function convertFromSalonTime(
     .setZone(targetTimezone);
 }
 
-/**
- * Obtiene la zona horaria actual del usuario
- */
+/** Returns the runtime's local IANA timezone (e.g. `"America/New_York"`). */
 export function getUserTimezone(): string {
   return DateTime.local().zoneName;
 }
 
 /**
- * Formatea una fecha en la zona horaria del salón
+ * Formats a `Date` as a human string in the salon's timezone.
+ *
+ * @param date - Instant to format (any timezone).
+ * @param locationId - Salon location id used to resolve the target zone.
+ * @param format - Luxon `toFormat` pattern.
  */
 export function formatInSalonTimezone(
   date: Date,
@@ -55,25 +62,21 @@ export function formatInSalonTimezone(
   return salonTime.toFormat(format);
 }
 
-/**
- * Convierte un string de tiempo 'HH:mm' a minutos desde la medianoche
- */
+/** Converts an `"HH:mm"` string to minutes since midnight. */
 function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(':').map(Number);
   return hours * 60 + minutes;
 }
 
-/**
- * Convierte minutos desde la medianoche a string 'HH:mm'
- */
+/** Converts minutes since midnight back to an `"HH:mm"` string. */
 function minutesToTime(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
   return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
 }
 
-const BUFFER_MINUTES = 15;
-const SLOT_INTERVAL = 15;
+const BUFFER_MINUTES = 15; // cleaning gap enforced *between* appointments
+const SLOT_INTERVAL = 15; // candidate start times are offered every 15 min
 
 interface TimeShift {
   open: string;
@@ -256,8 +259,8 @@ export async function isSlotAvailable(
   locationId: string,
   serviceId: string
 ): Promise<boolean> {
-  // TODO: Verificar contra citas existentes en Prisma
-  // incluyendo el buffer de 15 minutos entre citas.
+  // TODO: Check against existing appointments in Prisma,
+  // including the 15-minute buffer between appointments.
   return true;
 }
 

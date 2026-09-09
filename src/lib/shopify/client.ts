@@ -1,6 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 
-// Get environment variables
+// Resolve env vars at module load; falls back to dotenv so standalone
+// scripts (outside the Next.js runtime) can still use this client.
 const getEnvVars = () => {
   // Try to get from process.env first (Next.js runtime)
   let domain = process.env.SHOPIFY_STORE_DOMAIN;
@@ -31,6 +32,10 @@ if (!domain || !storefrontAccessToken) {
   console.log('Token:', storefrontAccessToken ? 'Set' : 'Not set');
 }
 
+/**
+ * Storefront API GraphQL client, or `null` when credentials are missing —
+ * callers must handle the null case (see `shopifyRequest`).
+ */
 export const shopifyClient = domain && storefrontAccessToken 
   ? new GraphQLClient(
       `https://${domain}/api/${apiVersion}/graphql.json`,
@@ -43,7 +48,13 @@ export const shopifyClient = domain && storefrontAccessToken
     )
   : null;
 
-// Error handling wrapper
+/**
+ * Error-handling wrapper around `shopifyClient.request`.
+ *
+ * @throws When the client isn't configured, or the request fails — the
+ *   original error is logged and a generic message is thrown so internal
+ *   details aren't leaked to callers.
+ */
 export async function shopifyRequest<T>(
   query: string,
   variables?: Record<string, any>

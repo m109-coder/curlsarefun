@@ -6,6 +6,14 @@ export const dynamic = 'force-dynamic';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
 
+/**
+ * GET /api/admin/services?locationId=...
+ *
+ * Returns the list of services for a given salon location.
+ * Used by the admin booking form and service management views.
+ *
+ * Requires a valid `admin-token` JWT cookie.
+ */
 export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get('admin-token')?.value;

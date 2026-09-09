@@ -5,6 +5,10 @@ import { MapPin, Phone, X, Clock, ExternalLink } from 'lucide-react';
 import { salonLocations } from '@/config/locations';
 import type { SalonLocation } from '@/types';
 
+/**
+ * Modal showing an embedded Google Map for a salon, its address/phone and
+ * a "Get Directions" external link.
+ */
 function MapModal({
   location,
   onClose,
@@ -79,6 +83,10 @@ function MapModal({
   );
 }
 
+/**
+ * Homepage grid of salon location cards. Clicking a card opens a `MapModal`
+ * with the embedded map and directions link.
+ */
 export function LocationCards() {
   const [selectedLocation, setSelectedLocation] = useState<SalonLocation | null>(null);
 

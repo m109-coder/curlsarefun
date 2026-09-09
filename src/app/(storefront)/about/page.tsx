@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   description: 'Meet Antonio Berducci, your curly hair guru.',
 };
 
+/**
+ * Static "About Antonio" page: bio, credentials and portrait.
+ * Purely presentational — no data fetching.
+ */
 export default function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

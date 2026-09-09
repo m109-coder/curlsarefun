@@ -40,6 +40,10 @@ interface ProductItem {
   image?: string;
 }
 
+/**
+ * Combines the appointment's ISO date and "HH:mm" start/end time into a
+ * Luxon `DateTime` in the salon's timezone. Returns `null` on bad input.
+ */
 function parseAppointmentDate(dateStr: string, timeStr: string, timezone: string): DateTime | null {
   const datePart = dateStr.split('T')[0];
   const [hours, minutes] = timeStr.split(':').map(Number);
@@ -55,10 +59,12 @@ function parseAppointmentDate(dateStr: string, timeStr: string, timezone: string
   return dt.isValid ? dt : null;
 }
 
+/** Formats a numeric amount as USD, e.g. `$25.00`. */
 function formatCurrency(amount: number): string {
   return `$${amount.toFixed(2)}`;
 }
 
+/** Escapes special characters per the iCalendar (RFC 5545) spec. */
 function escapeIcs(value: string): string {
   return value
     .replace(/\\/g, '\\\\')
@@ -67,6 +73,7 @@ function escapeIcs(value: string): string {
     .replace(/\n/g, '\\n');
 }
 
+/** Builds a downloadable `.ics` VCALENDAR/VEVENT payload for the appointment. */
 function generateIcs(
   title: string,
   start: DateTime,
@@ -95,6 +102,15 @@ function generateIcs(
   ].join('\r\n');
 }
 
+/**
+ * Post-payment success screen (rendered inside a `Suspense` boundary because
+ * it reads search params).
+ *
+ * Reads `bookingId`, `payment`, `amountPaid`, `productTotal` and `items` from
+ * the query string, confirms the payment server-side (mirrors the Stripe
+ * webhook fulfillment, idempotent), fetches the appointment, and shows the
+ * summary plus "Add to Calendar" links (Google Calendar URL and .ics file).
+ */
 function BookingSuccessPageContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('bookingId');
@@ -208,6 +224,8 @@ function BookingSuccessPageContent() {
     URL.revokeObjectURL(url);
   };
 
+  // Prefer the server's recorded amount; fall back to the query param when
+  // the appointment record hasn't been updated yet
   const displayAmountPaid = appointment && appointment.amountPaid > 0
     ? appointment.amountPaid
     : amountPaidFromQuery;
@@ -435,6 +453,10 @@ function BookingSuccessPageContent() {
   );
 }
 
+/**
+ * Booking success page. Wraps the content in `Suspense` since
+ * `useSearchParams` requires it under static rendering.
+ */
 export default function BookingSuccessPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div></div>}>

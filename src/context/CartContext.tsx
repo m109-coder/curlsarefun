@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+/** A product line item stored in the cart. */
 export interface CartItem {
   id: string;
   variantId: string;
@@ -13,6 +14,7 @@ export interface CartItem {
   productType: string;
 }
 
+/** A pending appointment whose deposit counts toward the cart total. */
 export interface ActiveBooking {
   id: string;
   serviceName: string;
@@ -46,6 +48,14 @@ const BOOKING_STORAGE_KEY = 'curlsarefun-active-booking';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+/**
+ * Global cart state provider.
+ *
+ * Persists both the product items and the active booking hold in
+ * `localStorage` (keys `curlsarefun-cart` / `curlsarefun-active-booking`).
+ * Expired booking holds are discarded on load. `cartTotal` and `cartCount`
+ * include the active booking's deposit.
+ */
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [activeBooking, setActiveBookingState] = useState<ActiveBooking | null>(null);
@@ -94,6 +104,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeBooking, isLoaded]);
 
+  /**
+   * Adds a product variant to the cart (merging quantities for existing
+   * items) and opens the cart drawer.
+   */
   const addItem = (product: any, variantId: string, quantity: number = 1) => {
     const variant = product.variants?.edges?.find((v: any) => v.node.id === variantId);
     if (!variant) return;
@@ -134,6 +148,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems(prevItems => prevItems.filter(item => item.variantId !== variantId));
   };
 
+  /** Sets a line item's quantity; removes the item at <= 0. */
   const updateQuantity = (variantId: string, quantity: number) => {
     if (quantity <= 0) {
       removeItem(variantId);
@@ -159,6 +174,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setActiveBookingState(null);
   };
 
+  // Cart totals include the booking deposit as a pseudo line item
   const cartTotal =
     items.reduce((total, item) => total + item.price * item.quantity, 0) +
     (activeBooking ? activeBooking.depositAmount : 0);
@@ -189,6 +205,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Access the cart context. Throws outside of `CartProvider`. */
 export function useCart() {
   const context = useContext(CartContext);
   if (context === undefined) {

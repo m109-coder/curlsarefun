@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   description: 'Find Curls Are Fun salons in New York, Boston, and Los Angeles.',
 };
 
+/**
+ * Static locations page listing the three salons (NY, Boston, LA) with
+ * address, phone and a per-location color theme.
+ */
 export default function LocationsPage() {
   const locations = [
     {

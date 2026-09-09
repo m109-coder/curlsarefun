@@ -16,6 +16,18 @@ function sanitizeInput(input: string): string {
     .trim();
 }
 
+/**
+ * POST /api/admin/bookings
+ *
+ * Creates an appointment from the admin panel, bypassing public
+ * availability checks. Upserts the client, recalculates totals for
+ * the guest count and creates the appointment in the requested status.
+ *
+ * Body: locationId, serviceIds, guestCount, clientInfo,
+ * selectedDate, selectedTime, notes, status (default CONFIRMED).
+ *
+ * Requires a valid `admin-token` JWT cookie.
+ */
 export async function POST(request: NextRequest) {
   try {
     const token = request.cookies.get('admin-token')?.value;
@@ -87,6 +99,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Aggregate selected services and multiply by guest count
     const baseDuration = services.reduce((sum, s) => sum + s.duration, 0);
     const basePrice = services.reduce((sum, s) => sum + Number(s.price), 0);
     const totalDuration = baseDuration * guests;

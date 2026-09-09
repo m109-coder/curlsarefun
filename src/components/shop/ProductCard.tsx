@@ -9,6 +9,15 @@ interface ProductCardProps {
   product: any;
 }
 
+/**
+ * Shopify product card linking to the product detail page.
+ *
+ * Shows image, price (with compare-at strikethrough on sale), a static
+ * rating badge, and a hover "quick add" button that adds the first variant
+ * to the cart.
+ *
+ * @param product - Shopify product node (Storefront API shape).
+ */
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem, setIsOpen } = useCart();
   
@@ -20,6 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
     : null;
   const isOnSale = compareAtPrice && compareAtPrice > price;
 
+  /** Adds the first variant to the cart without navigating away. */
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     if (variant) {

@@ -8,8 +8,17 @@ import { getLocationById } from '@/config/locations';
 import { calculateEndTime } from '@/lib/booking/timezone';
 import { useCart } from '@/context/CartContext';
 
+/** Ordered steps of the multi-step booking wizard. */
 type BookingStep = 'location' | 'service' | 'guests' | 'calendar' | 'info' | 'summary' | 'confirmation';
 
+/**
+ * Booking wizard page (client component).
+ *
+ * Walks the client through location → services → guests → date/time →
+ * contact info → summary. On confirm it POSTs to `/api/appointments`,
+ * stores the resulting booking deposit in the cart via `setActiveBooking`,
+ * and redirects to the unified `/checkout?appointmentId=...` page.
+ */
 export default function BookingPage() {
   const [currentStep, setCurrentStep] = useState<BookingStep>('location');
   const [selectedLocation, setSelectedLocation] = useState<string>('');
@@ -38,6 +47,7 @@ export default function BookingPage() {
   const services = (location?.services || []).slice().sort((a, b) => a.executionOrder - b.executionOrder);
   const selectedServiceObjects = services.filter(s => selectedServices.includes(s.id));
 
+  // Base totals are per-person; a 60-min fallback avoids a zero duration
   const baseDuration = selectedServiceObjects.reduce((sum, s) => sum + s.duration, 0) || 60;
   const basePrice = selectedServiceObjects.reduce((sum, s) => sum + Number(s.price), 0);
   const baseDeposit = selectedServiceObjects.reduce((sum, s) => sum + Number(s.depositAmount), 0);
@@ -63,6 +73,7 @@ export default function BookingPage() {
     }
   };
 
+  /** Adds or removes a service id from the selection (multi-select). */
   const handleServiceToggle = (service: { id: string; duration: number; price: number; depositAmount: number }) => {
     setSelectedServices(prev => 
       prev.includes(service.id)
@@ -75,6 +86,7 @@ export default function BookingPage() {
     setSelectedServices(prev => prev.filter(id => id !== serviceId));
   };
 
+  /** Per-step validation gating the Next button. */
   const canProceed = () => {
     switch (currentStep) {
       case 'location':
@@ -92,6 +104,10 @@ export default function BookingPage() {
     }
   };
 
+  /**
+   * Creates the appointment via the API, stores its deposit in the cart
+   * (`activeBooking`), then redirects to checkout for payment.
+   */
   const handleBookingConfirm = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);

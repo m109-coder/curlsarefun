@@ -5,7 +5,14 @@ import { WaveDivider } from '@/components/ui/WaveDivider';
 import Link from 'next/link';
 import Image from 'next/image';
 
+/**
+ * Storefront home page (server component).
+ *
+ * Fetches the first products from Shopify and renders the hero section,
+ * salon location cards (with map modal), and a featured products grid.
+ */
 export default async function HomePage() {
+  // Fetch up to 8 products, keep only the first 4 for the featured row
   const productsData = await getAllProducts(8);
   const featuredProducts = productsData.products?.edges?.slice(0, 4).map((edge: any) => edge.node) || [];
 

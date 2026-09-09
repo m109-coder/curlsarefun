@@ -11,12 +11,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export default stripe;
 
-/** Converts a USD amount to Stripe's integer cents representation. */
+/**
+ * Converts a USD amount to Stripe's integer cents representation.
+ *
+ * @param amount - Amount in dollars (e.g. `49.99`).
+ * @returns Integer cents (`4999`); `Math.round` guards against float drift.
+ */
 export function formatAmountForStripe(amount: number): number {
   return Math.round(amount * 100); // Convert to cents
 }
 
-/** Converts a Stripe integer cents amount back to USD. */
+/**
+ * Converts a Stripe integer cents amount back to USD.
+ *
+ * @param amount - Integer cents from a Stripe object (e.g. `amount_received`).
+ * @returns Amount in dollars.
+ */
 export function formatAmountFromStripe(amount: number): number {
   return amount / 100; // Convert from cents
 }
