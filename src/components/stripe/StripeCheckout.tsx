@@ -194,6 +194,9 @@ export function StripeCheckout({
 
   useEffect(() => {
     const createPaymentIntent = async () => {
+      setError(null);
+      setClientSecret(null);
+      setIsLoading(true);
       try {
         const response = await fetch('/api/create-payment-intent', {
           method: 'POST',
@@ -216,11 +219,13 @@ export function StripeCheckout({
 
         if (data.clientSecret) {
           setClientSecret(data.clientSecret);
+          setError(null);
         } else {
           throw new Error('No client secret returned from server');
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to initialize payment');
+        setClientSecret(null);
         console.error('Payment intent creation error:', err);
       } finally {
         setIsLoading(false);

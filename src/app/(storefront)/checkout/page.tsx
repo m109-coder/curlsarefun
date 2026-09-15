@@ -298,7 +298,11 @@ function CheckoutPageContent() {
             </div>
           )}
 
-          {totalAmount > 0 ? (
+          {appointmentId && loadingAppointment ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : totalAmount > 0 ? (
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-3 hidden sm:block">Payment Information</h2>
               <StripeCheckout
