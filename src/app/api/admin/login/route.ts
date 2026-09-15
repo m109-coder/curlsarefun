@@ -13,7 +13,7 @@ const TEMP_ADMIN_USER = {
   id: 'temp-admin-id',
   email: 'admin@curlsarefun.com',
   name: 'Admin User',
-  password: '$2b$10$QAmVPej1Jbat3.SE8RtofOt75bH.P5j6oaR36V0SiYu9pIHqkxm5e', // bcrypt hash of 'Admin2024!Secure'
+  password: '$2b$10$vpt2JNDzJZZy855TRSSL1uIvNUT8/RcrDwiYkwn8dk8xr2y6pEktG', // bcrypt hash of 'Admin2024!Secure'
   role: 'admin',
 };
 
