@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!type || amount === undefined || !clientInfo) {
+    if (amount === undefined || !clientInfo) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -50,14 +50,11 @@ export async function POST(request: NextRequest) {
     // Products are always paid in full. Bookings may be deposit or full.
     // The server recomputes the price; the client `amount` is only used as a
     // sanity check (it must match the recomputed total).
+    // `appointmentId` always takes precedence over the client `type`.
     let bookingAmount = 0;
     let productTotal = 0;
 
     // Product items: everything that is not the appointment placeholder.
-    // NOTE: `variantId` is NOT required here — it is only needed later for the
-    // Shopify order line item. Items persisted in localStorage may lack it, and
-    // filtering them out made the server compute $0 for products, producing a
-    // spurious "Payment amount mismatch" 400 on combined checkouts.
     const productItems = (items || []).filter(
       (item: any) => !item.appointmentId && Number(item.quantity || 0) > 0
     );
@@ -66,8 +63,20 @@ export async function POST(request: NextRequest) {
       0
     );
 
+    const hasProducts = computedProductTotal > 0;
+    const hasAppointment = Boolean(appointmentId);
+
+    // Server-side, authoritative payment mode based on what is actually present
+    const paymentMode = hasAppointment && hasProducts
+      ? 'combined'
+      : hasAppointment
+        ? 'booking'
+        : 'product';
+
+    metadataType = paymentMode;
+
     // For booking or combined payments, verify appointment exists
-    if ((type === 'booking' || type === 'combined') && appointmentId) {
+    if (paymentMode === 'booking' || paymentMode === 'combined') {
       const appointment = await prisma.appointment.findUnique({
         where: { id: appointmentId },
         include: { services: true, client: true },
@@ -120,7 +129,7 @@ export async function POST(request: NextRequest) {
       bookingAmount = paymentOption === 'full' ? totalAmount : depositAmount;
 
       // For booking-only, the charge is exactly the booking amount
-      if (type === 'booking') {
+      if (paymentMode === 'booking') {
         productTotal = 0;
         finalAmount = bookingAmount;
         description = paymentOption === 'full'
@@ -129,7 +138,7 @@ export async function POST(request: NextRequest) {
       }
 
       // For combined, the charge is product total (always full) + booking amount
-      if (type === 'combined') {
+      if (paymentMode === 'combined') {
         productTotal = computedProductTotal;
         finalAmount = productTotal + bookingAmount;
 
@@ -150,7 +159,8 @@ export async function POST(request: NextRequest) {
         where: { id: appointmentId },
         data: { paymentOption },
       });
-    } else if (type === 'product') {
+    } else {
+      // Product-only checkout
       bookingAmount = 0;
       productTotal = computedProductTotal;
       finalAmount = productTotal;
