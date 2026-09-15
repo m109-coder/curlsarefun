@@ -18,6 +18,7 @@ const TEMP_ADMIN_USER = {
 };
 
 const TEMP_ADMIN_PLAIN_PASSWORD = 'Curls2024!';
+const TEMP_ADMIN_EMAILS = [TEMP_ADMIN_USER.email, 'superadmin@curlsarefun.com', 'produccion@curlsarefun.com'];
 
 /**
  * POST /api/admin/login
@@ -71,8 +72,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Fallback to hardcoded user if database is unavailable
-    if (!user && email === TEMP_ADMIN_USER.email) {
-      user = TEMP_ADMIN_USER;
+    if (!user && TEMP_ADMIN_EMAILS.includes(email)) {
+      user = { ...TEMP_ADMIN_USER, email };
       console.log('⚠️ Usando usuario temporal (modo fallback)');
     }
 
