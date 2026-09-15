@@ -326,8 +326,7 @@ export default function AdminServicesPage() {
                 )}
               </div>
 
-              {/* Hover action buttons */}
-              <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-200 bg-white border-t border-gray-100 rounded-b-xl p-3 shadow-lg flex items-center justify-between gap-2 z-10">
+              <div className="flex items-center justify-between gap-2 pt-3 border-t border-gray-100">
                 <button
                   onClick={() => startEdit(service)}
                   className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
@@ -343,9 +342,6 @@ export default function AdminServicesPage() {
                   <span>Delete</span>
                 </button>
               </div>
-
-              {/* Reserve space for the hover bar */}
-              <div className="h-12" />
             </div>
           ))}
 
