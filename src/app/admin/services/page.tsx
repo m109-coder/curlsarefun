@@ -290,55 +290,70 @@ export default function AdminServicesPage() {
           </div>
         </form>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 text-gray-600 text-sm">
-              <tr>
-                <th className="px-4 py-3 rounded-l-lg">Name</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Duration</th>
-                <th className="px-4 py-3">Price</th>
-                <th className="px-4 py-3">Deposit</th>
-                <th className="px-4 py-3 rounded-r-lg text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filtered.map((service) => (
-                <tr key={service.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-900">{service.name}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 capitalize">{service.category}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{service.duration} min</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">${Number(service.price).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">${Number(service.depositAmount).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="inline-flex items-center space-x-2">
-                      <button
-                        onClick={() => startEdit(service)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Edit"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(service.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
-                    No services for this location yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filtered.map((service) => (
+            <div
+              key={service.id}
+              className="group relative bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md transition-all"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 truncate">{service.name}</h3>
+                  <span className="inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
+                    {service.category}
+                  </span>
+                </div>
+                <span className="text-lg font-bold text-green-700">
+                  ${Number(service.price).toFixed(2)}
+                </span>
+              </div>
+
+              <div className="space-y-2 text-sm text-gray-600 mb-4">
+                <div className="flex items-center justify-between">
+                  <span>Duration</span>
+                  <span className="font-medium text-gray-900">{service.duration} min</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Deposit</span>
+                  <span className="font-medium text-gray-900">${Number(service.depositAmount).toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Execution order</span>
+                  <span className="font-medium text-gray-900">{service.executionOrder}</span>
+                </div>
+                {service.description && (
+                  <p className="text-xs text-gray-500 pt-1 line-clamp-2">{service.description}</p>
+                )}
+              </div>
+
+              {/* Hover action buttons */}
+              <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-200 bg-white border-t border-gray-100 rounded-b-xl p-3 shadow-lg flex items-center justify-between gap-2 z-10">
+                <button
+                  onClick={() => startEdit(service)}
+                  className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Pencil className="w-4 h-4" />
+                  <span>Edit</span>
+                </button>
+                <button
+                  onClick={() => handleDelete(service.id)}
+                  className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Delete</span>
+                </button>
+              </div>
+
+              {/* Reserve space for the hover bar */}
+              <div className="h-12" />
+            </div>
+          ))}
+
+          {filtered.length === 0 && (
+            <div className="md:col-span-2 xl:col-span-3 text-center py-12 text-gray-500 bg-white rounded-xl border border-gray-200">
+              No services for this location yet.
+            </div>
+          )}
         </div>
       </div>
     </div>
