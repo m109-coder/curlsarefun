@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     });
 
     console.log('Comparando contraseñas...');
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
     console.log('Password match:', isPasswordValid);
 
     if (!isPasswordValid) {
