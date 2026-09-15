@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, Clock, MapPin, DollarSign, MoreHorizontal, Check, X, Loader2, CreditCard } from 'lucide-react';
+import { Calendar, Clock, MapPin, DollarSign, Check, X, Loader2, CreditCard, Phone, Mail } from 'lucide-react';
 
 interface Appointment {
   id: string;
@@ -27,7 +27,6 @@ interface Appointment {
 export default function BookingsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedAppointment, setSelectedAppointment] = useState<string | null>(null);
   const [charging, setCharging] = useState<string | null>(null);
 
   useEffect(() => {
@@ -55,10 +54,9 @@ export default function BookingsPage() {
       });
 
       if (response.ok) {
-        setAppointments(appointments.map(apt => 
+        setAppointments(appointments.map(apt =>
           apt.id === appointmentId ? { ...apt, status: newStatus } : apt
         ));
-        setSelectedAppointment(null);
       }
     } catch (error) {
       console.error('Failed to update appointment:', error);
@@ -87,7 +85,6 @@ export default function BookingsPage() {
           ? { ...apt, balanceDue: 0, amountPaid: apt.totalAmount, depositPaid: true }
           : apt
       ));
-      setSelectedAppointment(null);
       alert('Remaining balance charged successfully');
     } catch (error) {
       console.error('Failed to charge balance:', error);
@@ -139,155 +136,128 @@ export default function BookingsPage() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Client
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date & Time
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Location
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Service
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Balance
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {appointments.map((appointment) => (
-                <tr key={appointment.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {appointment.client.name}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {appointment.client.email}
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        {appointment.client.phone}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2 text-sm text-gray-900">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      <span>{new Date(appointment.date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      <Clock className="w-4 h-4 text-gray-400" />
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {appointments.map((appointment) => {
+          const serviceNames = appointment.service
+            ?.slice()
+            .sort((a, b) => a.executionOrder - b.executionOrder)
+            .map(s => s.name)
+            .join(' + ') || 'No service';
+
+          return (
+            <div
+              key={appointment.id}
+              className="group relative bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md transition-all"
+            >
+              {/* Header: status + location */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <MapPin className="w-4 h-4" />
+                  <span>{getLocationName(appointment.locationId)}</span>
+                </div>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(appointment.status)}`}>
+                  {appointment.status}
+                </span>
+              </div>
+
+              {/* Client */}
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-gray-900 truncate">{appointment.client.name}</h3>
+                <div className="flex items-center space-x-2 text-sm text-gray-500 mt-1">
+                  <Mail className="w-3.5 h-3.5" />
+                  <span className="truncate">{appointment.client.email}</span>
+                </div>
+                {appointment.client.phone && (
+                  <div className="flex items-center space-x-2 text-sm text-gray-500 mt-1">
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>{appointment.client.phone}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Date & service */}
+              <div className="space-y-3 mb-4">
+                <div className="flex items-start space-x-3 text-sm text-gray-700">
+                  <Calendar className="w-4 h-4 text-gray-400 mt-0.5" />
+                  <div>
+                    <p>{new Date(appointment.date).toLocaleDateString()}</p>
+                    <div className="flex items-center space-x-1 text-gray-500">
+                      <Clock className="w-3.5 h-3.5" />
                       <span>{appointment.startTime}</span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2 text-sm text-gray-900">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span>{getLocationName(appointment.locationId)}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {appointment.service?.slice().sort((a, b) => a.executionOrder - b.executionOrder).map(s => s.name).join(' + ')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2 text-sm text-gray-900">
-                      <DollarSign className="w-4 h-4 text-gray-400" />
-                      <span>${Number(appointment.totalAmount).toFixed(2)}</span>
-                    </div>
-                    {appointment.depositPaid && (
-                      <span className="text-xs text-green-600">• Paid</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(appointment.status)}`}>
-                      {appointment.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {Number(appointment.balanceDue) > 0 ? (
-                      <span className="text-sm font-medium text-amber-600">
-                        ${Number(appointment.balanceDue).toFixed(2)} due
-                      </span>
-                    ) : (
-                      <span className="text-sm text-green-600">Fully paid</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="relative">
-                      <button
-                        onClick={() => setSelectedAppointment(
-                          selectedAppointment === appointment.id ? null : appointment.id
-                        )}
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <MoreHorizontal className="w-5 h-5" />
-                      </button>
-                      
-                      {selectedAppointment === appointment.id && (
-                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-10">
-                          <div className="py-1">
-                            <button
-                              onClick={() => updateStatus(appointment.id, 'CONFIRMED')}
-                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                            >
-                              <Check className="w-4 h-4 text-green-600" />
-                              Confirm
-                            </button>
-                            <button
-                              onClick={() => updateStatus(appointment.id, 'CANCELLED')}
-                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                            >
-                              <X className="w-4 h-4 text-red-600" />
-                              Cancel
-                            </button>
+                  </div>
+                </div>
 
-                            {Number(appointment.balanceDue) > 0 && (
-                              <button
-                                onClick={() => chargeRemainingBalance(appointment.id)}
-                                disabled={charging === appointment.id}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 disabled:opacity-50"
-                              >
-                                {charging === appointment.id ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <CreditCard className="w-4 h-4 text-blue-600" />
-                                )}
-                                Charge Remaining Balance
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {appointments.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
-                    No appointments found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                <div className="text-sm text-gray-700">
+                  <span className="font-medium text-gray-900">Service:</span>{' '}
+                  <span className="text-gray-600">{serviceNames}</span>
+                </div>
+              </div>
+
+              {/* Amount & balance */}
+              <div className="flex items-center justify-between border-t border-gray-100 pt-4 mb-2">
+                <div className="flex items-center space-x-2 text-gray-900 font-semibold">
+                  <DollarSign className="w-4 h-4 text-gray-500" />
+                  <span>${Number(appointment.totalAmount).toFixed(2)}</span>
+                </div>
+                {Number(appointment.balanceDue) > 0 ? (
+                  <span className="text-sm font-medium text-amber-600">
+                    ${Number(appointment.balanceDue).toFixed(2)} due
+                  </span>
+                ) : (
+                  <span className="text-sm text-green-600 font-medium">Fully paid</span>
+                )}
+              </div>
+
+              {/* Hover action buttons */}
+              <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-200 bg-white border-t border-gray-100 rounded-b-xl p-3 shadow-lg flex items-center justify-between gap-2 z-10">
+                {appointment.status !== 'CONFIRMED' && (
+                  <button
+                    onClick={() => updateStatus(appointment.id, 'CONFIRMED')}
+                    className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Confirm</span>
+                  </button>
+                )}
+
+                {appointment.status !== 'CANCELLED' && (
+                  <button
+                    onClick={() => updateStatus(appointment.id, 'CANCELLED')}
+                    className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                    <span>Cancel</span>
+                  </button>
+                )}
+
+                {Number(appointment.balanceDue) > 0 && (
+                  <button
+                    onClick={() => chargeRemainingBalance(appointment.id)}
+                    disabled={charging === appointment.id}
+                    className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60"
+                  >
+                    {charging === appointment.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <CreditCard className="w-4 h-4" />
+                    )}
+                    <span>Charge</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Reserve space so the hover bar does not overlap content below */}
+              <div className="h-12" />
+            </div>
+          );
+        })}
+
+        {appointments.length === 0 && (
+          <div className="md:col-span-2 xl:col-span-3 text-center py-12 text-gray-500 bg-white rounded-xl border border-gray-200">
+            No appointments found
+          </div>
+        )}
       </div>
     </div>
   );

@@ -261,6 +261,46 @@ export default function AdminDashboard() {
         ))}
       </div>
 
+      {/* Today&rsquo;s Schedule — shown right after the stats because it is the most actionable view */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Today&rsquo;s Schedule</h2>
+        {todaySchedule.length > 0 ? (
+          <div className="space-y-2">
+            {scheduleRows.map((row, rowIndex) => (
+              <div key={rowIndex} className="grid gap-2" style={{ gridTemplateColumns: `repeat(${maxColumns}, minmax(0, 1fr))` }}>
+                {row.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`p-3 rounded-lg border-l-4 ${
+                      item.status === 'CONFIRMED' ? 'bg-green-50 border-green-500' : 'bg-yellow-50 border-yellow-500'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-2 text-sm font-medium text-gray-900">
+                        <Clock className="w-4 h-4 text-gray-400" />
+                        <span>{item.time}</span>
+                      </div>
+                    </div>
+                    <p className="text-sm font-medium text-gray-900 mt-1 truncate">{item.serviceName}</p>
+                    <p className="text-xs text-gray-500">{item.clientName}</p>
+                    {row.length > 1 && (
+                      <span className="inline-block mt-1 text-xs text-amber-600 font-medium bg-amber-100 px-2 py-0.5 rounded">
+                        Overlap
+                      </span>
+                    )}
+                  </div>
+                ))}
+                {Array.from({ length: maxColumns - row.length }).map((_, i) => (
+                  <div key={`empty-${i}`} className="hidden lg:block" />
+                ))}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center py-8">No appointments scheduled for today.</p>
+        )}
+      </div>
+
       {/* Recent Activity */}
       <div className="bg-white rounded-xl shadow-sm p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
@@ -300,62 +340,21 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* Quick Actions & Today's Schedule */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="space-y-3">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-left flex items-center space-x-3"
-            >
-              <Calendar className="w-5 h-5" />
-              <span>Create New Booking</span>
-            </button>
-            <button className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-left flex items-center space-x-3">
-              <Users className="w-5 h-5" />
-              <span>Add New Client</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Today&apos;s Schedule</h2>
-          {todaySchedule.length > 0 ? (
-            <div className="space-y-2">
-              {scheduleRows.map((row, rowIndex) => (
-                <div key={rowIndex} className="grid gap-2" style={{ gridTemplateColumns: `repeat(${maxColumns}, minmax(0, 1fr))` }}>
-                  {row.map((item) => (
-                    <div
-                      key={item.id}
-                      className={`p-3 rounded-lg border-l-4 ${
-                        item.status === 'CONFIRMED' ? 'bg-green-50 border-green-500' : 'bg-yellow-50 border-yellow-500'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-2 text-sm font-medium text-gray-900">
-                          <Clock className="w-4 h-4 text-gray-400" />
-                          <span>{item.time}</span>
-                        </div>
-                      </div>
-                      <p className="text-sm font-medium text-gray-900 mt-1 truncate">{item.serviceName}</p>
-                      <p className="text-xs text-gray-500">{item.clientName}</p>
-                      {row.length > 1 && (
-                        <span className="inline-block mt-1 text-xs text-amber-600 font-medium bg-amber-100 px-2 py-0.5 rounded">
-                          Overlap
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                  {Array.from({ length: maxColumns - row.length }).map((_, i) => (
-                    <div key={`empty-${i}`} className="hidden lg:block" />
-                  ))}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No appointments scheduled for today.</p>
-          )}
+      {/* Quick Actions */}
+      <div className="bg-white rounded-xl shadow-sm p-6 max-w-2xl">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <div className="space-y-3">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-left flex items-center space-x-3"
+          >
+            <Calendar className="w-5 h-5" />
+            <span>Create New Booking</span>
+          </button>
+          <button className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-left flex items-center space-x-3">
+            <Users className="w-5 h-5" />
+            <span>Add New Client</span>
+          </button>
         </div>
       </div>
 
