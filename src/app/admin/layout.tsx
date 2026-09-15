@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   Users,
-  Megaphone
+  Megaphone,
+  Scissors
 } from 'lucide-react';
 import AuthProtection from '@/components/admin/AuthProtection';
 
@@ -32,6 +33,7 @@ export default function AdminLayout({
     { name: 'Calendar', href: '/admin/calendar', icon: CalendarDays },
     { name: 'Bookings', href: '/admin/bookings', icon: Calendar },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingBag },
+    { name: 'Services', href: '/admin/services', icon: Scissors },
     { name: 'Marketing', href: '/admin/marketing', icon: Megaphone },
   ];
 
