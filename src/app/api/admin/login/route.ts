@@ -17,6 +17,8 @@ const TEMP_ADMIN_USER = {
   role: 'admin',
 };
 
+const TEMP_ADMIN_PLAIN_PASSWORD = 'Curls2024!';
+
 /**
  * POST /api/admin/login
  *
@@ -92,7 +94,11 @@ export async function POST(request: NextRequest) {
     });
 
     console.log('Comparando contraseñas...');
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    // Fallback user uses a plaintext password because bcryptjs has been
+    // unreliable in this environment. Database users still use bcrypt.
+    const isPasswordValid = useDatabase
+      ? bcrypt.compareSync(password, user.password)
+      : password === TEMP_ADMIN_PLAIN_PASSWORD;
     console.log('Password match:', isPasswordValid);
 
     if (!isPasswordValid) {
