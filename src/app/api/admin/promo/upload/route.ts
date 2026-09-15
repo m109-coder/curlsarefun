@@ -34,7 +34,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Ensure the public bucket exists (no-op if it already does)
-    const { data: buckets } = await supabaseAdmin.storage.listBuckets();
+    const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
+    if (listError) {
+      console.error('[promo/upload] listBuckets failed:', listError);
+      return NextResponse.json({ error: 'Storage list failed', details: listError.message }, { status: 500 });
+    }
     if (!buckets?.some((b) => b.name === BUCKET)) {
       const { error: createError } = await supabaseAdmin.storage.createBucket(BUCKET, { public: true });
       if (createError) {
