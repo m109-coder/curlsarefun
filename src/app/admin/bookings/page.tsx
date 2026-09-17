@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, Clock, MapPin, DollarSign, Check, X, Loader2, CreditCard, Phone, Mail } from 'lucide-react';
+import { Calendar, Clock, MapPin, DollarSign, Check, X, Loader2, CreditCard, Phone, Mail, Pencil } from 'lucide-react';
+import { AppointmentDetailsModal } from '@/components/admin/AppointmentDetailsModal';
 
 interface Appointment {
   id: string;
@@ -18,7 +19,7 @@ interface Appointment {
     email: string;
     phone: string;
   };
-  service: {
+  services: {
     name: string;
     executionOrder: number;
   }[];
@@ -28,6 +29,7 @@ export default function BookingsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [charging, setCharging] = useState<string | null>(null);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAppointments();
@@ -138,7 +140,7 @@ export default function BookingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {appointments.map((appointment) => {
-          const serviceNames = appointment.service
+          const serviceNames = appointment.services
             ?.slice()
             .sort((a, b) => a.executionOrder - b.executionOrder)
             .map(s => s.name)
@@ -245,6 +247,14 @@ export default function BookingsPage() {
                     <span>Charge</span>
                   </button>
                 )}
+
+                <button
+                  onClick={() => setSelectedBookingId(appointment.id)}
+                  className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <Pencil className="w-4 h-4" />
+                  <span>Edit</span>
+                </button>
               </div>
 
               {/* Reserve space so the hover bar does not overlap content below */}
@@ -259,6 +269,14 @@ export default function BookingsPage() {
           </div>
         )}
       </div>
+
+      {selectedBookingId && (
+        <AppointmentDetailsModal
+          appointmentId={selectedBookingId}
+          onClose={() => setSelectedBookingId(null)}
+          onUpdate={fetchAppointments}
+        />
+      )}
     </div>
   );
 }
