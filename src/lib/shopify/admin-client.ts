@@ -198,10 +198,6 @@ export const GET_ORDER_QUERY = `
                 currencyCode
               }
             }
-            variant {
-              id
-              sku
-            }
           }
         }
       }
