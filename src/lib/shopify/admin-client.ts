@@ -218,12 +218,15 @@ export const GET_ORDER_QUERY = `
 `;
 
 /**
- * Fetches a single order by its GraphQL global id (e.g. `gid://shopify/Order/123`).
- * Returns `null` when the order doesn't exist; re-throws on API errors.
+ * Fetches a single order by its GraphQL global id (e.g. `gid://shopify/Order/123`)
+ * or a plain numeric order id. Returns `null` when the order doesn't exist;
+ * re-throws on API errors.
  */
 export async function getShopifyOrderById(id: string) {
   try {
-    const data = await shopifyAdminRequest(GET_ORDER_QUERY, { id });
+    // REST ids are plain numbers; GraphQL `ID!` requires the global GID form.
+    const orderId = /^\d+$/.test(id) ? `gid://shopify/Order/${id}` : id;
+    const data = await shopifyAdminRequest(GET_ORDER_QUERY, { id: orderId });
     return data?.order || null;
   } catch (error) {
     console.error('Failed to fetch Shopify order:', error);
