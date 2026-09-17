@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const { supabaseAdmin } = await import('@/lib/supabase/admin');
+      if (!supabaseAdmin) throw new Error('Supabase not configured');
       const { data: dbUser, error } = await supabaseAdmin
         .from('AdminUser')
         .select('*')

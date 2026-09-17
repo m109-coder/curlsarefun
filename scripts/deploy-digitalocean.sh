@@ -16,8 +16,8 @@ apt update
 echo "=== Installing dependencies ==="
 apt install -y curl git nginx postgresql postgresql-contrib ufw
 
-echo "=== Installing Node.js 20 ==="
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+echo "=== Installing Node.js 22 ==="
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt install -y nodejs
 npm install -g pm2
 
@@ -28,9 +28,8 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_NAME} TO ${DB_US
 
 echo "=== Cloning repository ==="
 mkdir -p /var/www
-cd /var/www
 if [ ! -d "${APP_DIR}" ]; then
-  git clone https://github.com/m109-coder/curlsarefun.git
+  git clone https://github.com/m109-coder/curlsarefun.git ${APP_DIR}
 fi
 cd ${APP_DIR}
 git pull origin main
@@ -40,27 +39,31 @@ npm install
 npx prisma generate
 
 echo "=== Creating .env ==="
-# The user must edit this section with real secrets before running the script.
-cat > .env << EOF
-DATABASE_URL="postgresql://${DB_USER}:${DB_PASS}@localhost:5432/${DB_NAME}"
-NEXT_PUBLIC_APP_URL=http://${APP_IP}
+# IMPORTANT: Replace <PLACEHOLDER> values with real credentials before running.
+cat > .env << 'EOF'
+DATABASE_URL="postgresql://curls:CurlsDB2024!@localhost:5432/curlsarefun"
+NEXT_PUBLIC_APP_URL=http://164.92.126.232
 NODE_ENV=production
 JWT_SECRET=super-secret-jwt-key-change-in-production-please-use-32-chars
 ADMIN_EMAIL=admin@curlsarefun.com
 ADMIN_PASSWORD=Curls2024!
 
-# Required for full functionality — replace with real values
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_anon_key
-SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-SHOPIFY_STOREFRONT_ACCESS_TOKEN=your_storefront_token
-SHOPIFY_ADMIN_ACCESS_TOKEN=your_admin_token
+# Optional Supabase Storage (only needed for promo image uploads)
+NEXT_PUBLIC_SUPABASE_URL=<PLACEHOLDER>
+SUPABASE_SERVICE_ROLE_KEY=<PLACEHOLDER>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<PLACEHOLDER>
+
+# Shopify (required for products/orders)
+SHOPIFY_STORE_DOMAIN=<PLACEHOLDER>
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=<PLACEHOLDER>
+SHOPIFY_ADMIN_ACCESS_TOKEN=<PLACEHOLDER>
 SHOPIFY_API_VERSION=2024-01
-NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-STRIPE_SECRET_KEY=sk_test_your_secret_key
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=<PLACEHOLDER>
+
+# Stripe (required for payments)
+STRIPE_SECRET_KEY=<PLACEHOLDER>
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<PLACEHOLDER>
+STRIPE_WEBHOOK_SECRET=<PLACEHOLDER>
 EOF
 
 echo "=== Running Prisma migrations ==="

@@ -33,6 +33,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Image must be smaller than 5MB' }, { status: 400 });
     }
 
+    if (!supabaseAdmin) {
+      return NextResponse.json(
+        { error: 'Supabase Storage is not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to enable uploads.' },
+        { status: 503 }
+      );
+    }
+
     // Ensure the public bucket exists (no-op if it already does)
     const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
     if (listError) {
